@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<table class="table table-bordered">
+{% set color = true %}
+{% for beer in beers %}
+{% if color %}
+<tr class='success'>
+{% else %}
+<tr class='pending'>
+{% endif %}
+    <td>{{beer['name']}}</td>
+    <td>{{beer['brewery']}}</td>
+    <td>{{beer['type']}}</td>
+    <td>{{"%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])}}</td>
+    <td>{{beer['content']}} %</td>
+</tr>
+{% if color %}
+{% set color = false %}
+{% else %}
+{% set color = true %}
+{%endif%}
+{% endfor %}
+</table>
+{%endblock %}
