@@ -16,15 +16,15 @@ def entry():
                 'brewery': form.brewery.data,
                 'type': form.beertype.data,
                 'content': form.alcohols.data,
-                'pint': int(form.pricepint.data),
+                'pint': float(form.pricepint.data),
             }
             if form.pricehalf.data:
-                beer['half'] = int(form.pricehalf.data),
+                beer['half'] = float(form.pricehalf.data),
             else:
                 beer['half'] = beer['pint'] + 2
 
             if form.pricegrowler.data:
-                beer['growler'] = int(form.pricegrowler.data)
+                beer['growler'] = float(form.pricegrowler.data)
             else:
                 beer['growler'] = beer['half'] * 2
 
