@@ -4,11 +4,11 @@ from app.form import BeerForm
 import redis
 import json
 
-@app.route('/entry', methods = ['POST'])
+@app.route('/entry', methods = ['GET', 'POST'])
 def entry():
     form = BeerForm()
     if request.method == 'POST':
-        if form.validate()
+        if form.validate():
             pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
             r = redis.Redis(connection_pool=pool)
             beer = {
@@ -30,14 +30,10 @@ def entry():
 
             r.set('beer_{0}'.format(form.beername.data.replace(' ', '')), json.dumps(beer))
             r.save()
-            form.reset()
+        return redirect('entry')
+    else:
+        return render_template('entry.html', title = 'Entry', form = form)
 
-    return render_template('entry.html', title = 'Entry', form = form)
-
-@app.route('/entry', methods = ['GET'])
-def entry():
-    form = BeerForm()
-    return render_template('entry.html', title = 'Entry', form = form)
 
 @app.route('/')
 def home():
