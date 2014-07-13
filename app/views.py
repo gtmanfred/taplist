@@ -4,7 +4,7 @@ from app.form import BeerForm
 import redis
 import json
 
-@app.route('/entry', methods = ['GET', 'POST'])
+@app.route('/entry', methods = ['POST'])
 def entry():
     form = BeerForm()
     if hasattr(form.beername, 'data') and form.beername.data:
@@ -29,6 +29,11 @@ def entry():
 
         r.set('beer_{0}'.format(form.beername.data.replace(' ', '')), json.dumps(beer))
         r.save()
+    return render_template('entry.html', title = 'Entry', form = form)
+
+@app.route('/entry', methods = ['GET'])
+def entry():
+    form = BeerForm()
     return render_template('entry.html', title = 'Entry', form = form)
 
 @app.route('/')
