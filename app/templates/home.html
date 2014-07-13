@@ -2,18 +2,25 @@
 {% block content %}
 <table class="table table-bordered">
 {% set color = true %}
+    <tr class='warning'>
+        <td>Brewery</td>
+        <td>Name</td>
+        <td>Style</td>
+        <td>64oz/32oz/16oz</td>
+        <td>ABV</td>
+    </tr>
 {% for beer in beers %}
 {% if color %}
-<tr class='success'>
+    <tr class='success'>
 {% else %}
-<tr class='pending'>
+    <tr class='pending'>
 {% endif %}
-    <td>{{beer['brewery']}}</td>
-    <td>{{beer['name']}}</td>
-    <td>{{beer['type']}}</td>
-    <td>{{"%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])}}</td>
-    <td>{{beer['content']}} %</td>
-</tr>
+        <td>{{beer['brewery']}}</td>
+        <td>{{beer['name']}}</td>
+        <td>{{beer['type']}}</td>
+        <td>{{"%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])}}</td>
+        <td>{{beer['content']}} %</td>
+    </tr>
 {% if color %}
 {% set color = false %}
 {% else %}
