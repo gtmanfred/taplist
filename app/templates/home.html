@@ -8,8 +8,8 @@
 {% else %}
 <tr class='pending'>
 {% endif %}
-    <td>{{beer['name']}}</td>
     <td>{{beer['brewery']}}</td>
+    <td>{{beer['name']}}</td>
     <td>{{beer['type']}}</td>
     <td>{{"%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])}}</td>
     <td>{{beer['content']}} %</td>

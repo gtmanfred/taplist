@@ -3,6 +3,7 @@ from app import app
 from app.form import BeerForm
 import redis
 import json
+import operator
 
 @app.route('/entry', methods = ['GET', 'POST'])
 def entry():
@@ -40,4 +41,5 @@ def home():
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+    beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('home.html', title='Beer List', beers=beers)
