@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content -%}
+        <table class="table table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Brewery</th>
+                    <th>Name</th>
+                    <th>Style</th>
+                    <th>64<sup>oz</sup>/32<sup>oz</sup>/16<sup>oz</sup></th>
+                    <th>ABV<sup>%</sup></th>
+                </tr>
+            </thead>
+            <tbody style='font-weight:bold;'>
+        {% for beer in beers -%}
+                <tr>
+                    <td>{{ beer['brewery'] }}</td>
+                    <td>{{ beer['name']}}</td>
+                    <td>{{ beer['type']}}</td>
+                    <td>{{ "%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
+                    <td>{{ beer['content']|replace('\.0', '') }} %</td>
+                </tr>
+        {% endfor -%}
+            </tbody>
+        </table>
+{% endblock -%}

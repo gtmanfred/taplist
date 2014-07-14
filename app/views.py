@@ -37,10 +37,17 @@ def entry():
 
 
 @app.route('/')
-@app.route('/index.html')
 def home():
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
-    return render_template('home.html', title='Beer List', beers=beers)
+    return render_template('edit.html', title='Beer List', beers=[beer in beers if beers['active'])
+
+@app.route('/')
+def home():
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+    r = redis.Redis(connection_pool=pool)
+    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+    beers.sort(key=operator.itemgetter('brewery', 'name'))
+    return render_template('index.html', title='Beer List', beers=[beer in beers if beers['active'])
