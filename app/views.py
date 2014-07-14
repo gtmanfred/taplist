@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, request
+from flask import render_template, flash, redirect, request, url_for
 from app import app
 from app.form import BeerForm
 import redis
@@ -31,12 +31,13 @@ def entry():
 
             r.set('beer_{0}'.format(form.beername.data.replace(' ', '')), json.dumps(beer))
             r.save()
-        return redirect('entry')
+        return redirect(url_for('entry'))
     else:
         return render_template('entry.html', title = 'Entry', form = form)
 
 
 @app.route('/')
+@app.route('/index.html')
 def home():
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
