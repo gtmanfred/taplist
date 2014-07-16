@@ -1,4 +1,3 @@
-import redis
 import requests
 from bs4 import BeautifulSoup
 
@@ -28,4 +27,3 @@ for tr in rows:
         r = requests.post('http://localhost:4000/entry', data=payload)
     except Exception as exc:
         payload['pricepint'] = entry[3].split(' ')[1]
-    
