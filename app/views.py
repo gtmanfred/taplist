@@ -1,10 +1,9 @@
-from flask import render_template, flash, redirect, request, url_for
+from flask import render_template, redirect, request, url_for
 from app import app
 from app.form import BeerForm
 import redis
 import json
 import operator
-import pprint
 
 
 @app.route('/entry', methods=['GET', 'POST'])
