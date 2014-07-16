@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content -%}
+    <div class='table-responsive'>
         <table class="table table-condensed table-striped">
             <thead>
                 <tr>
@@ -17,9 +18,13 @@
                     <td>{{ beer['name']}}</td>
                     <td>{{ beer['type']}}</td>
                     <td>{{ "%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
-                    <td>{{ beer['content']|replace('\.0', '') }} %</td>
+                    <td>{{ beer['content'] }} %</td>
                 </tr>
         {% endfor -%}
             </tbody>
         </table>
+    </div>
+    <div style="float:right;padding-right:15px;padding-bottom:15px;">*TX Beers</div>        
+
+    
 {% endblock -%}

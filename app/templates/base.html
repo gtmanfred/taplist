@@ -14,7 +14,6 @@
     <!-- Bootstrap -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
 
-    <script type="text/javascript" src="/static/js/paging.js"></script>
 
     <style>
       body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 1.5em; font-weight:bold; }
@@ -25,11 +24,8 @@
       .table>thead { background:#BF162C; color:#ffffff; }
     </style>
   </head>
-  <body>
+  <body onLoad="pageScroll()">
 
-    <div class='table-responsive'>
-      {% block content %}{% endblock %}
-    </div>
-    <div style="float:right;padding-right:15px;padding-bottom:15px;">*TX Beers</div>
+  {% block content %}{% endblock %}
   </body>
 </html>

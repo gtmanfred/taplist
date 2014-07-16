@@ -3,26 +3,19 @@
 <form action="" method="post" name="entry">
     {{form.hidden_tag()}}
     <p>
-        Please enter the Beer Name:<br>
-        {{form.beername(size=80)}}<br>
+        Brewery: {{form.brewery(size=80)}}<br>
     </p>
     <p>
-        Please enter the Brewery Name:<br>
-        {{form.brewery(size=80)}}<br>
+        Name: {{form.beername(size=80)}}<br>
     </p>
     <p>
-        Please enter the Beer Type:<br>
-        {{form.beertype(size=80)}}<br>
+        Style: {{form.beertype(size=80)}}<br>
     </p>
     <p>
-        Please enter the Alcohol Content:<br>
-        {{form.alcohols(size=80)}}<br>
+        ABV: {{form.alcohols(size=80)}}<br>
     </p>
     <p>
-        Please enter the Beer Price:<br>
-        {{form.pricepint(size=80)}}<br>
-        {{form.pricehalf(size=80)}}<br>
-        {{form.pricegrowler(size=80)}}<br>
+        Prices: {{form.pricepint(size=5)}} {{form.pricehalf(size=5)}} {{form.pricegrowler(size=5)}}
     </p>
     <p><input type="submit" value="Entry"></p>
 </form>
