@@ -41,9 +41,10 @@ def entry():
         return render_template('entry.html', title='Entry', form=form)
 
 
+#unused and r isn't a method or variable that's defined
+#def update_list(name):
+#    beer = json.loads(r.get(name).decode())
 
-def update_list(name):
-    beer = json.loads(r.get(name).decode())
 
 @app.route('/edit', methods=['GET', 'POST'])
 def editlist():
