@@ -14,6 +14,7 @@ for location in ['huebner', 'broadway', 'gastropub']:
         if entry[0][-1] == '*':
             entry[0] = entry[0].replace('*', "'")
             entry[0] = entry[0][:-1]
+            entry[0] += '*'
         else:
             entry[0] = entry[0].replace('*', "'")
 
