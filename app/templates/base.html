@@ -34,15 +34,5 @@
     </head>
     <body>
         {% block content %}{% endblock %}
-        <script type="text/javascript">
-            function scroll(speed) {
-                $(beers).animate({scrollTop: $(beertable).height() - $(beers).height()}, speed, "linear", function(){
-                        $(this).animate({scrollTop: 0}, speed, "linear");
-                });
-            }
-            speed = 200000;
-            scroll(speed)
-            setInterval(function(){scroll(speed)}, speed * 2 + 5000);
-        </script>
     </body>
 </html>

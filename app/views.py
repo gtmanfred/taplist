@@ -40,10 +40,14 @@ def entry():
     else:
         return render_template('entry.html', title='Entry', form=form)
 
-
-#unused and r isn't a method or variable that's defined
-#def update_list(name):
-#    beer = json.loads(r.get(name).decode())
+@app.route('/scroll', methods=['GET'])
+def scroll():
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+    r = redis.Redis(connection_pool=pool)
+    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+    beers.sort(key=operator.itemgetter('brewery', 'name'))
+    return render_template('scroll.html', title='Beer List',
+                           beers=[beer for beer in beers if beer['active']])
 
 
 @app.route('/edit', methods=['GET', 'POST'])
