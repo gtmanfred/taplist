@@ -16,18 +16,33 @@
 
 
     <style>
-      body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 1.5em; font-weight:bold; }
-      .table tbody>tr>td { border-top: 1px dotted #DDD; line-height:22px;}
-      .table-condensed tbody>tr>td { padding: 0px; padding-left: 5px; }
-      .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { background-color: #c7ffa0; }
-      .table-striped>tbody>tr:nth-child(even)>td, .table-striped>tbody>tr:nth-child(even)>th { background-color: #F4FCBB; }
-      .table>thead { background:#BF162C; color:#ffffff; }
-      .innerb {height: 950px; overflow:auto;}
-      .scrollable {overflow-y: scroll;}
+        body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 1.5em; font-weight:bold; }
+        .table tbody>tr>td { border-top: 1px dotted #DDD; line-height:22px;}
+        .table-condensed tbody>tr>td {padding: 0px; padding-left: 5px; }
+        .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { background-color: #c7ffa0; }
+        .table-striped>tbody>tr:nth-child(even)>td, .table-striped>tbody>tr:nth-child(even)>th { background-color: #F4FCBB; }
+        .table>thead { background:#BF162C; color:#ffffff; }
+        .scrollable {overflow-y: scroll;}
+        .bodycontainer {height: 80%; width: 100%;}
+        .th1 {width:20%;}
+        .th2 {width:35%;}
+        .th3 {width:30%;}
+        .th4 {width:10%;}
+        .th5 {width:5%;}
     </style>
-  </head>
-  <body onLoad="pageScroll()">
-
-  {% block content %}{% endblock %}
-  </body>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    </head>
+    <body>
+        {% block content %}{% endblock %}
+        <script type="text/javascript">
+            function scroll(speed) {
+                $(beers).animate({scrollTop: $(beertable).height() - $(beers).height()}, speed, "linear", function(){
+                        $(this).animate({scrollTop: 0}, speed, "linear");
+                });
+            }
+            speed = 200000;
+            scroll(speed)
+            setInterval(function(){scroll(speed)}, speed * 2 + 5000);
+        </script>
+    </body>
 </html>
