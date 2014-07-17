@@ -5,19 +5,19 @@ import redis
 import json
 import operator
 
-locations = {
-        'broadway': 1,
-        'huebner': 2,
-        'gastropub': 3
-        }
-
+locations = [
+        'broadway',
+        'huebner',
+        'gastropub',
+        ]
 
 @app.route('/<location>/entry', methods=['GET', 'POST'])
 def entry(location):
-    print(request.form)
+    if location not in locations:
+        return 'Unknown Location'
     form = BeerForm()
     if request.method == 'POST':
-        pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beer = {
             'name': form.beername.data,
@@ -38,9 +38,13 @@ def entry(location):
 
         beer['active'] = True
 
-        r.set('beer_{0}_{1}'.format(form.brewery.data.replace(' ', ''),
-                                    form.beername.data.replace(' ', '')),
-              json.dumps(beer))
+        r.set('beer_{0}_{1}_{2}'.format(
+            location,
+            form.brewery.data.replace(' ', ''),
+            form.beername.data.replace(' ', '')),
+            json.dumps(beer)
+        )
+
         r.save()
         return redirect('/{0}/entry'.format(location))
     else:
@@ -48,9 +52,11 @@ def entry(location):
 
 @app.route('/<location>/scroll', methods=['GET'])
 def scroll(location):
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
+    if location not in locations:
+        return 'Unknown Location'
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']])
@@ -58,29 +64,35 @@ def scroll(location):
 
 @app.route('/<location>/edit', methods=['GET', 'POST'])
 def editlist(location):
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
+    if location not in locations:
+        return 'Unknown Location'
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}*'.format(location))]
     if request.method == 'POST':
         for beer in beers:
-            beername = 'beer_{0}_{1}'.format(beer['brewery'].replace(' ', ''),
-                                             beer['name'].replace(' ', ''))
+            beername = 'beer_{0}_{1}_{2}'.format(
+                location,
+                beer['brewery'].replace(' ', ''),
+                beer['name'].replace(' ', '')
+            )
+
             beer['active'] = True if beername in \
                 request.form.getlist('checks') else False
             r.set(beername, json.dumps(beer))
             r.save()
         for beer in request.form.getlist('delete'):
             r.delete(beer)
-        beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+        beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*').format(location)]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('edit.html', title='Beer List', beers=beers)
 
 
 @app.route('/<location>')
 def index(location):
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
+    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']])
