@@ -9,6 +9,8 @@
                         <th>Style</th>
                         <th>64<sup>oz</sup>/32<sup>oz</sup>/16<sup>oz</sup></th>
                         <th>ABV<sup>%</sup></th>
+                        <th>Active</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody style='font-weight:bold;'>
@@ -17,9 +19,9 @@
                         <td>{{ beer['brewery'] }}</td>
                         <td>{{ beer['name']}}</td>
                         <td>{{ beer['type']}}</td>
-                        <td>{{ "%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
+                        <td>{{ "$ %s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
                         <td>{{ beer['content'] }} %</td>
-                        <td><input id="test" type="checkbox" name="checks" value="{{ "beer_%s_%s"|format(beer['brewery'], beer['name'])|replace(' ', '') }}"
+                        <td><input type="checkbox" name="checks" value="{{ "beer_%s_%s"|format(beer['brewery'], beer['name'])|replace(' ', '') }}"
                             {%- if beer['active'] %} checked
                             {%- endif -%}></td>
                         <td><input type="checkbox" name="delete" value="{{ "beer_%s_%s"|format(beer['brewery'], beer['name'])|replace(' ', '') }}"</td>

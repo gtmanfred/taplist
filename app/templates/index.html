@@ -1,30 +1,4 @@
 {% extends "base.html" %}
 {% block content -%}
-        <table class="table table-condensed table-striped">
-            <thead>
-                <tr>
-                    <th class="th1">Brewery</th>
-                    <th class="th2">Name</th>
-                    <th class="th3">Style</th>
-                    <th class="th4">64<sup>oz</sup>/32<sup>oz</sup>/16<sup>oz</sup></th>
-                    <th class="th5">ABV<sup>%</sup></th>
-                </tr>
-            </thead>
-        </table>
-        <div class="scrollable bodycontainer" id="beers">
-            <table class="table table-condensed table-striped">
-                <tbody style='font-weight:bold;' id="beertable">
-                    {%- for beer in beers %}
-                    <tr>
-                        <td class="th1">{{ beer['brewery'] }}</td>
-                        <td class="th2">{{ beer['name']}}</td>
-                        <td class="th3">{{ beer['type']}}</td>
-                        <td class="th4">{{ "%s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
-                        <td class="th5">{{ beer['content'] }} %</td>
-                    </tr>
-                {%- endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div style="float:right;padding-right:15px;padding-bottom:15px;">*TX Beers</div>        
+        {%- include 'table.html' %}
 {% endblock -%}

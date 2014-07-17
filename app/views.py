@@ -83,12 +83,13 @@ def editlist(location):
             r.save()
         for beer in request.form.getlist('delete'):
             r.delete(beer)
-        beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*').format(location)]
+        beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('edit.html', title='Beer List', beers=beers)
 
 
 @app.route('/<location>')
+@app.route('/<location>/')
 def index(location):
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
