@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content -%}
-    <div class='table-responsive'>
         <table class="table table-condensed table-striped">
             <thead>
                 <tr>
@@ -12,6 +11,9 @@
                 </tr>
             </thead>
             <tbody style='font-weight:bold;'>
+            <tr><td colspan="5">
+                <div class="innerb">
+                <table class="table table-condensed table-striped scrollable">
         {% for beer in beers -%}
                 <tr>
                     <td>{{ beer['brewery'] }}</td>
@@ -21,9 +23,11 @@
                     <td>{{ beer['content'] }} %</td>
                 </tr>
         {% endfor -%}
+                </table>
+            </div>
+            </td></tr>
             </tbody>
         </table>
-    </div>
     <div style="float:right;padding-right:15px;padding-bottom:15px;">*TX Beers</div>        
 
     
