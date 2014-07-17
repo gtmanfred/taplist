@@ -29,12 +29,13 @@
         <div style="float:right;padding-right:15px;padding-bottom:15px;">*TX Beers</div>        
         <script type="text/javascript">
             function scroll(speed) {
-                $(beers).animate({scrollTop: $(beertable).height() - $(beers).height()}, speed, "linear", function(){
-                        $(this).animate({scrollTop: 0}, speed, "linear");
+                $(beers).delay(5000).animate({scrollTop: $(beertable).height() - $(beers).height()}, speed, "linear", function(){
+                        $(this).delay(5000).animate({scrollTop: 0}, speed, "linear", function(){
+                            scroll(speed);
+                        });
                 });
             }
-            speed = 200000;
+            speed = 100000;
             scroll(speed)
-            setInterval(function(){scroll(speed)}, speed * 2 + 5000);
         </script>
 {% endblock -%}
