@@ -5,13 +5,19 @@ import redis
 import json
 import operator
 
+locations = {
+        'broadway': 1,
+        'huebner': 2,
+        'gastropub': 3
+        }
 
-@app.route('/entry', methods=['GET', 'POST'])
-def entry():
+
+@app.route('/<location>/entry', methods=['GET', 'POST'])
+def entry(location):
     print(request.form)
     form = BeerForm()
     if request.method == 'POST':
-        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
         r = redis.Redis(connection_pool=pool)
         beer = {
             'name': form.beername.data,
@@ -36,13 +42,13 @@ def entry():
                                     form.beername.data.replace(' ', '')),
               json.dumps(beer))
         r.save()
-        return redirect(url_for('entry'))
+        return redirect('/{0}/entry'.format(location))
     else:
         return render_template('entry.html', title='Entry', form=form)
 
-@app.route('/scroll', methods=['GET'])
-def scroll():
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+@app.route('/<location>/scroll', methods=['GET'])
+def scroll(location):
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
     r = redis.Redis(connection_pool=pool)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
@@ -50,9 +56,9 @@ def scroll():
                            beers=[beer for beer in beers if beer['active']])
 
 
-@app.route('/edit', methods=['GET', 'POST'])
-def editlist():
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+@app.route('/<location>/edit', methods=['GET', 'POST'])
+def editlist(location):
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
     r = redis.Redis(connection_pool=pool)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
     if request.method == 'POST':
@@ -70,9 +76,9 @@ def editlist():
     return render_template('edit.html', title='Beer List', beers=beers)
 
 
-@app.route('/')
-def index():
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+@app.route('/<location>')
+def index(location):
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=locations[location])
     r = redis.Redis(connection_pool=pool)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_*')]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
