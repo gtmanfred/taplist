@@ -8,6 +8,7 @@ class BeerForm(Form):
     brewery = TextField('brewery', validators=[Required()])
     beertype = TextField('beertype', validators=[Required()])
     alcohols = TextField('alcohols', validators=[Required()])
-    pricepint = TextField('pint price', validators=[Required()])
+    pricepint = TextField('pint price')
     pricehalf = TextField('half growler price')
     pricegrowler = TextField('growler price')
+    notes = TextField('Note')

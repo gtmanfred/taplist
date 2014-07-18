@@ -17,8 +17,18 @@
                         <td class="th1">{{ beer['brewery'] }}</td>
                         <td class="th2">{{ beer['name']}}</td>
                         <td class="th3">{{ beer['type']}}</td>
+                        {%- if beer['notes'] != "" %}
+                        <td class="th4">{{ beer['notes'] }}</td>
+                        {%- elif beer['pint'] is defined %}
                         <td class="th4">{{ "$ %s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
+                        {%- else %}
+                        <td class="th4"></td>
+                        {%- endif %}
+                        {%- if beer['content'] != "" %}
                         <td class="th5">{{ beer['content'] }} %</td>
+                        {%- else %}
+                        <td class="th5"></td>
+                        {%- endif %}
                     </tr>
                 {%- endfor %}
                 </tbody>

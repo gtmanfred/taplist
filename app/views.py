@@ -24,17 +24,26 @@ def entry(location):
             'brewery': form.brewery.data,
             'type': form.beertype.data,
             'content': form.alcohols.data,
-            'pint': float(form.pricepint.data),
+            'location': location
         }
+
+        if form.pricepint.data != "":
+            beer['pint'] = float(form.pricepint.data)
+
         if form.pricehalf.data:
-            beer['half'] = float(form.pricehalf.data),
-        else:
+            beer['half'] = float(form.pricehalf.data)
+
+        elif 'pint' in beer:
+
             beer['half'] = beer['pint'] + 2
 
         if form.pricegrowler.data:
             beer['growler'] = float(form.pricegrowler.data)
-        else:
+        elif 'half' in beer:
             beer['growler'] = beer['half'] * 2
+
+        if hasattr(form.notes, 'data'):
+            beer['notes'] = form.notes.data
 
         beer['active'] = True
 
@@ -85,6 +94,8 @@ def editlist(location):
             r.delete(beer)
         beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
+    if request.method == 'POST':
+        return redirect(location)
     return render_template('edit.html', title='Beer List', beers=beers)
 
 

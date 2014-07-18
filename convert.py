@@ -22,10 +22,17 @@ for location in ['huebner', 'broadway', 'gastropub']:
             "brewery": entry[0].title(),
             "beername": entry[1].title().replace('*', "'"),
             "beertype": entry[2].title().replace('*', "'"),
-            "pricepint": entry[3].split(' ')[-1],
             "alcohols": entry[4].strip('%').strip()
         }
+
+        if '/' in entry[3]:
+            payload["pricepint"] = entry[3].split(' ')[-1].split('/')[-1]
+            print(payload["pricepint"])
+        else:
+            payload["notes"] = entry[3]
+
         try:
             r = requests.post('http://localhost:4000/{0}/entry'.format(location), data=payload)
         except Exception as exc:
-            payload['pricepint'] = entry[3].split(' ')[1]
+            payload['pricepint'] = entry[3]
+            r = requests.post('http://localhost:4000/{0}/entry'.format(location), data=payload)
