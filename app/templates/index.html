@@ -1,4 +1,6 @@
 {% extends "base.html" %}
 {% block content -%}
+        {%- include "tablehead.html" %}
+        <div class="scrollable bodycontainer" id="beers">
         {%- include 'table.html' %}
 {% endblock -%}
