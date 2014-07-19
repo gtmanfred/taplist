@@ -102,6 +102,8 @@ def editlist(location):
 @app.route('/<location>')
 @app.route('/<location>/')
 def index(location):
+    if location not in locations:
+        return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
