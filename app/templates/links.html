@@ -1,0 +1,12 @@
+<html>
+  <head>
+      <title>{{ title }}</title>
+  </head>
+  <body>
+    {% for location in locations %}
+    <a href="{{ '/%s/'|format(location) }}">{{ location }}</a><br>
+    <a href="{{ '/%s/edit'|format(location) }}">{{ location }} edit page</a><br>
+    <a href="{{ '/%s/entry'|format(location) }}">{{ location }} entry page</a><br>
+    {% endfor %}
+  </body>
+<html>

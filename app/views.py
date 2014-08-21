@@ -101,7 +101,7 @@ def editlist(location):
 
 @app.route('/<location>')
 @app.route('/<location>/')
-def index(location):
+def bars(location):
     if location not in locations:
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
@@ -110,3 +110,7 @@ def index(location):
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']])
+
+@app.route('/')
+def index():
+    return render_template('links.html', title='links', locations=locations)
