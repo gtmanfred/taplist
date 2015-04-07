@@ -16,20 +16,26 @@
 
 
     <style>
-        body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 1.5em; font-weight:bold; }
-        .table tbody>tr>td { border-top: 1px dotted #DDD; line-height:22px;}
+body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 1.5em; font-weight:bold; overflow:hidden;}
+        .table tbody>tr>td {line-height:22px;}
         .table-condensed tbody>tr>td {padding: 0px; padding-left: 5px; }
         .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { background-color: #c7ffa0; }
         .table-striped>tbody>tr:nth-child(even)>td, .table-striped>tbody>tr:nth-child(even)>th { background-color: #F4FCBB; }
         .table>thead {background:#BF162C; color:#ffffff;}
         .hidescrollable {overflow-y: hidden;}
         .scrollable {overflow-y: scroll;}
-        .bodycontainer {height: 80%; width: 100%;}
-        .th1 {width:20%;}
-        .th2 {width:30%;}
-        .th3 {width:20%;}
-        .th4 {width:20%;}
-        .th5 {width:10%;}
+        .bodycontainer {height: 94%; width: 100%; margin-top:-20px;overflow-y:scroll;}
+        .th1 {width:20%; font-size:1.2em;}
+        .th2 {width:30%; font-size:1.2em;}
+        .th3 {width:25%; font-size:1.2em;}
+        .th4 {width:20%; font-size:1.2em;}
+        .th5 {width:5%; font-size:1.2em;}
+        .td1 {width:20%;}
+        .td2 {width:30%;}
+        .td3 {width:25%;}
+        .td4 {width:20%;}
+        .td5 {width:5%;}
+        .footer {position:absolute;bottom:0;height:25px;width:100%;-webkit-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);-moz-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);border-top: 1px solid #DDD;text-align:right;padding-right:5px;font-size:1.2em;background:#BF162C; color:#000000;}
     </style>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     </head>

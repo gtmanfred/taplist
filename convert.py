@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-for location in ['huebner', 'broadway', 'gastropub']:
+for location in ['huebner', 'broadway', 'gastropub', 'thebridge']:
     content = requests.get('http://bighops.com/taplist-{0}/'.format(location))
     soup = BeautifulSoup(content.text)
     table = soup.find('tbody')
@@ -26,13 +26,13 @@ for location in ['huebner', 'broadway', 'gastropub']:
         }
 
         if '/' in entry[3]:
-            payload["pricepint"] = entry[3].split(' ')[-1].split('/')[-1]
+            payload["pricepint"] = entry[3].split('/')[-1]
             print(payload["pricepint"])
         else:
             payload["notes"] = entry[3]
 
         try:
-            r = requests.post('http://localhost:4000/{0}/entry'.format(location), data=payload)
+            r = requests.post('http://localhost/{0}/entry'.format(location), data=payload)
         except Exception as exc:
             payload['pricepint'] = entry[3]
-            r = requests.post('http://localhost:4000/{0}/entry'.format(location), data=payload)
+            r = requests.post('http://localhost/{0}/entry'.format(location), data=payload)

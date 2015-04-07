@@ -4,11 +4,13 @@ from app.form import BeerForm
 import redis
 import json
 import operator
+import re
 
 locations = [
         'broadway',
         'huebner',
         'gastropub',
+        'thebridge'
         ]
 
 @app.route('/<location>/entry', methods=['GET', 'POST'])
@@ -26,6 +28,8 @@ def entry(location):
             'content': form.alcohols.data,
             'location': location
         }
+        if re.match('[0-9]+\.?[0-9]*', beer['content']):
+            beer['content'] = '%s %%' % beer['content']
 
         if form.pricepint.data != "":
             beer['pint'] = float(form.pricepint.data)
