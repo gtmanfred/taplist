@@ -1,0 +1,5 @@
+Flask
+Flask-WTF
+requests
+redis
+beautifulsoup4
