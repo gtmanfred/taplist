@@ -1,0 +1,8 @@
+my-nova:
+  identity_url: 'https://identity.api.rackspacecloud.com/v2.0/'
+  compute_region: IAD
+  user: <username>
+  tenant: <ddi>
+  provider: nova
+  api_key: <apikey>
+  os_auth_plugin: rackspace

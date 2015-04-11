@@ -1,0 +1,13 @@
+update_cachedir: True
+diff_cache_events: True
+ssh_interface: private_ips
+change_password: True
+wait_for_ip_timeout: 6000
+display_ssh_output: False
+protocol: ipv4
+script_args: -LP git 2015.2
+minion:
+  master: <private_ip>
+  startup_states: highstate
+  mine_functions:
+    network.ip_addrs: []
