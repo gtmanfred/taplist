@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, url_for, jsonify
 from app import app
 from app.form import BeerForm
 import redis
@@ -76,6 +76,17 @@ def scroll(location):
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']])
+
+
+@app.route('/<location>/json', methods=['GET'])
+def get_json(location):
+    if location not in locations:
+        return 'Unknown Location'
+    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+    r = redis.Redis(connection_pool=pool)
+    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
+    beers.sort(key=operator.itemgetter('brewery', 'name'))
+    return jsonify({'beers': [b for b in beers if b['active']]})
 
 
 @app.route('/<location>/edit', methods=['GET', 'POST'])
