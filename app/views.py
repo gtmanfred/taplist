@@ -2,6 +2,7 @@ from flask import render_template, redirect, request, url_for
 from app import app
 from app.form import BeerForm
 import redis
+from redis.sentinel import Sentinel
 import json
 import operator
 import re
@@ -19,8 +20,10 @@ def entry(location):
         return 'Unknown Location'
     form = BeerForm()
     if request.method == 'POST':
-        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-        r = redis.Redis(connection_pool=pool)
+        #pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+        #r = redis.Redis(connection_pool=pool)
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
+        r = sentinel.master_for('mymaster', socket_timeout=0.1)
         beer = {
             'name': form.beername.data,
             'brewery': form.brewery.data,
@@ -79,8 +82,10 @@ def scroll(location):
 def editlist(location):
     if location not in locations:
         return 'Unknown Location'
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-    r = redis.Redis(connection_pool=pool)
+    #pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+    #r = redis.Redis(connection_pool=pool)
+    sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
+    r = sentinel.master_for('mymaster', socket_timeout=0.1)
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}*'.format(location))]
     if request.method == 'POST':
         for beer in beers:
