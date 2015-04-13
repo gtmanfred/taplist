@@ -3,10 +3,12 @@
       <title>{{ title }}</title>
   </head>
   <body>
-    {% for location in current_user.roles %}
+    {% for location in locations %}
     <a href="{{ '/%s/'|format(location) }}">{{ location }}</a><br>
+    {%- if location in current_user.roles %}
     <a href="{{ '/%s/edit'|format(location) }}">{{ location }} edit page</a><br>
     <a href="{{ '/%s/entry'|format(location) }}">{{ location }} entry page</a><br>
+    {%- endif %}
     {% endfor %}
     <br><br>
     {%- if current_user.is_authenticated() %}
