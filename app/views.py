@@ -1,5 +1,5 @@
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
-from flask_login import login_required, login_user, current_user
+from flask_login import login_required, login_user, logout_user, current_user
 from app import app
 from app.form import BeerForm, LoginForm
 from app.login import BarUser
@@ -157,6 +157,13 @@ def login():
             return redirect(next)
         error = "Login failed"
     return render_template('login.html', login=True, next=next, error=error, form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have logged out!')
+    return redirect('/')
 
 
 @app.route('/')
