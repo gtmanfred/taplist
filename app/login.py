@@ -28,14 +28,13 @@ class BarUser(UserMixin):
 
         pool = redis.ConnectionPool(host='localhost', port=6379, db=1)
         self.r = redis.Redis(connection_pool=pool)
-        if username is None or password is None:
+        item = self.r.hgetall('user_{0}'.format(username))
+        self.roles = item.get('roles', '').split(',')
+        if password is None:
             self.authenticated = False
-            self.roles = []
         else:
-            item = self.r.hgetall('user_{0}'.format(username))
             salt = ''.join(['$' + i for i in item['password'].split('$')[1:3]])
             self.authenticated = item['password'] == crypt.crypt(self.password, salt)
-            self.roles = item['roles'].split(',') if self.is_authenticated else []
 
     def is_authenticated(self):
         return True
