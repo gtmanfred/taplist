@@ -132,6 +132,23 @@ def bars(location):
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']])
 
+@app.route('/login')
+def login():
+    error = None
+    next = request.args.get('next')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if authenticate_user(username, password):
+            user = User.query.filter_by(username=username).first()
+            if login_user(user):
+                flash("You have logged in")
+                session['logged_in'] = True
+                return redirect(next or url_for('index', error=error))
+        error = "Login failed"
+    return render_template('login.html', login=True, next=next, error=error)
+
 @app.route('/')
 def index():
     return render_template('links.html', title='links', locations=locations)
