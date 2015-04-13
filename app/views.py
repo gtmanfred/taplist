@@ -1,7 +1,9 @@
-from flask import render_template, redirect, request, url_for, jsonify
-from flask_login import login_required
+from flask import render_template, redirect, request, url_for, jsonify, session, flash
+from flask_login import login_required, login_user, current_user
 from app import app
-from app.form import BeerForm
+from app.form import BeerForm, LoginForm
+from app.login import BarUser
+from app.auth import role_required
 import redis
 from redis.sentinel import Sentinel
 import json
@@ -16,6 +18,8 @@ locations = [
         ]
 
 @app.route('/<location>/entry', methods=['GET', 'POST'])
+@login_required
+@role_required
 def entry(location):
     if location not in locations:
         return 'Unknown Location'
@@ -132,22 +136,28 @@ def bars(location):
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']])
 
-@app.route('/login')
+
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
+    if current_user.is_authenticated():
+        return redirect(request.args.get('next') or '/')
     error = None
     next = request.args.get('next')
+    form = LoginForm()
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        if authenticate_user(username, password):
-            user = User.query.filter_by(username=username).first()
-            if login_user(user):
-                flash("You have logged in")
-                session['logged_in'] = True
-                return redirect(next or url_for('index', error=error))
+        user = BarUser(username, password)
+        if user.is_authenticated():
+            login_user(user)
+            flash("You have logged in")
+            session['logged_in'] = True
+            session['roles'] = user.roles
+            return redirect(next)
         error = "Login failed"
-    return render_template('login.html', login=True, next=next, error=error)
+    return render_template('login.html', login=True, next=next, error=error, form=form)
+
 
 @app.route('/')
 def index():
