@@ -24,7 +24,7 @@
                         {%- else %}
                         <td class="th4">{{ "$ %s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
                         {% endif %}
-                        <td>{{ beer['content'] }} %</td>
+                        <td>{{ beer['content'] }}</td>
                         <td><input id="test" type="checkbox" name="checks" value="{{ "beer_%s_%s_%s"|format(beer['location'], beer['brewery'], beer['name'])|replace(' ', '') }}"
                             {%- if beer['active'] %} checked
                             {%- endif -%}></td>
