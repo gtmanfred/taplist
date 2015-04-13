@@ -165,7 +165,7 @@ def login():
 def logout():
     logout_user()
     flash('You have logged out!')
-    return redirect('/')
+    return redirect(url_for('index'))
 
 
 @app.route('/')
