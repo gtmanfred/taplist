@@ -1,9 +1,25 @@
 import crypt
 import random
 import redis
+import sys
+from redis.sentinel import Sentinel
 import json
 import string
 from flask_login import UserMixin
+
+def create_user(username, password, roles):
+    sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
+    r = sentinel.master_for('mymaster', socket_timeout=0.1)
+    salt = '$6$'
+    for i in range(8):
+        salt += random.choice(string.ascii_letters + string.digits)
+    saltpass = crypt.crypt(newpassword, salt)
+    hashdict = {
+        'username': username,
+        'password': saltpass,
+        'roles': roles
+    }
+    r.hmset('user_{0}'.format(username), hashdict)
 
 class BarUser(UserMixin):
     def __init__(self, username=None, password=None):
@@ -32,3 +48,6 @@ class BarUser(UserMixin):
 
     def get_id(self):
         return self.username
+
+if __name__ == '__main__':
+    create_user(sys.argv[1:])
