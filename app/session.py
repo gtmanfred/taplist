@@ -1,6 +1,7 @@
 import pickle
 from datetime import timedelta
 from uuid import uuid4
+from redis import Redis
 from redis.sentinel import Sentinel
 from werkzeug.datastructures import CallbackDict
 from flask.sessions import SessionInterface, SessionMixin
@@ -24,7 +25,7 @@ class RedisSessionInterface(SessionInterface):
     def __init__(self, redis=None, prefix='session:'):
         if redis is None:
             sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-            redis = sentinel.master_for('mymaster', socket_timeout=0.1, db=2)
+            redis = sentinel.master_for('mymaster', socket_timeout=0.1, db=2, redis_class=Redis)
         self.redis = redis
         self.prefix = prefix
 
