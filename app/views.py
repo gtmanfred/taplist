@@ -156,7 +156,7 @@ def login():
             flash("You have logged in")
             session['logged_in'] = True
             session['roles'] = user.roles
-            return redirect(next)
+            return redirect(next or url_for('index', error=error))
         error = "Login failed"
     return render_template('login.html', login=True, next=next, error=error, form=form)
 

@@ -8,5 +8,11 @@
     <a href="{{ '/%s/edit'|format(location) }}">{{ location }} edit page</a><br>
     <a href="{{ '/%s/entry'|format(location) }}">{{ location }} entry page</a><br>
     {% endfor %}
+    <br><br>
+    {%- if current_user.is_authenticated() %}
+    <a href="/logout">LOGOUT</a><br>
+    {%- else %}
+    <a href="/login">LOGIN</a><br>
+    {%- endif %}
   </body>
 <html>
