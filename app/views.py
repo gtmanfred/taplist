@@ -95,6 +95,8 @@ def get_json(location):
 
 
 @app.route('/<location>/edit', methods=['GET', 'POST'])
+@login_required
+@role_required
 def editlist(location):
     if location not in locations:
         return 'Unknown Location'
