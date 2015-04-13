@@ -80,7 +80,7 @@ def scroll(location):
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
-                           beers=[beer for beer in beers if beer['active']])
+                           beers=[beer for beer in beers if beer['active']], location=location)
 
 
 @app.route('/<location>/json', methods=['GET'])
@@ -123,7 +123,7 @@ def editlist(location):
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     if request.method == 'POST':
         return redirect(location)
-    return render_template('edit.html', title='Beer List', beers=beers)
+    return render_template('edit.html', title='Beer List', beers=beers, location=location)
 
 
 @app.route('/<location>')
@@ -136,7 +136,7 @@ def bars(location):
     beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
-                           beers=[beer for beer in beers if beer['active']])
+                           beers=[beer for beer in beers if beer['active']], location=location)
 
 
 @app.route('/login', methods = ['GET', 'POST'])
