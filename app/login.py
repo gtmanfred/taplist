@@ -17,12 +17,17 @@ class BarUser(object):
         self.db = self.c.execute('select * from users where username="{0}";'.format(self.username))
         item = self.db.fetchone()
         salt = ''.join(['$' + i for i in item.split('$')[:2]])
-        self.authenticated = item['password'] == crypt.crypt(self.password, salt)
-        self.roles = item['roles'].split(',') if self.authenticated else ''
+        self.is_authenticated = item['password'] == crypt.crypt(self.password, salt)
+        self.roles = item['roles'].split(',') if self.is_authenticated else ''
+        self.is_active = True if self.is_authenticated else False
+        self.is_anonymous = False if self.is_authenticated else True
 
     def set_password(self, newpassword):
         salt = '$6$'
         for i in range(8):
             salt += random.choice(string.ascii_letters + string.digits)
         saltpass = crypt.crypt(newpassword, salt)
-        self.c.execute('update users set password="{0}" where username="{1}";'.format(saltpass, username)
+        self.c.execute('update users set password="{0}" where username="{1}";'.format(saltpass, username))
+
+    def get_id(self):
+        return self.username

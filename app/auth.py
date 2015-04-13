@@ -3,17 +3,6 @@ from functools import wraps
 from flask import session, request
 from flask.ext.restful import abort
 
-def login_required(func):
-    """
-    Check if user is logged in
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not session.get('username'):
-            abort(401)
-        return func(*args, **kwargs)
-    return wrapper
-
 def role_required(func):
     """
     Check if user has specified role for this sub page

@@ -1,4 +1,5 @@
 from flask import render_template, redirect, request, url_for, jsonify
+from flask_login import login_required
 from app import app
 from app.form import BeerForm
 import redis
