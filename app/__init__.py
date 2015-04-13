@@ -10,6 +10,8 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 from app import views, login
+from app.session import RedisSessionInterface
+app.session_interface = RedisSessionInterface()
 
 @login_manager.user_loader
 def load_user(name):
