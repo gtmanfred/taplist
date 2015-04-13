@@ -9,11 +9,11 @@ from flask_login import UserMixin
 
 def create_user(username, password, roles):
     sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-    r = sentinel.master_for('mymaster', socket_timeout=0.1)
+    r = sentinel.master_for('mymaster', socket_timeout=0.1, db=1)
     salt = '$6$'
     for i in range(8):
         salt += random.choice(string.ascii_letters + string.digits)
-    saltpass = crypt.crypt(newpassword, salt)
+    saltpass = crypt.crypt(password, salt)
     hashdict = {
         'username': username,
         'password': saltpass,
@@ -50,4 +50,4 @@ class BarUser(UserMixin):
         return self.username
 
 if __name__ == '__main__':
-    create_user(sys.argv[1:])
+    create_user(*sys.argv[1:])
