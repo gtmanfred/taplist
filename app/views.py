@@ -44,9 +44,7 @@ def entry(location):
 
         if form.pricehalf.data:
             beer['half'] = float(form.pricehalf.data)
-
         elif 'pint' in beer:
-
             beer['half'] = beer['pint'] + 2
 
         if form.pricegrowler.data:
@@ -57,7 +55,7 @@ def entry(location):
         if hasattr(form.notes, 'data'):
             beer['notes'] = form.notes.data
 
-        beer['active'] = True
+        beer['active'] = False
 
         r.set('beer_{0}_{1}_{2}'.format(
             location,
