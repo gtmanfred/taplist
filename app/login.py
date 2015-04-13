@@ -1,6 +1,7 @@
 import crypt
 import random
 import redis
+import json
 import string
 from flask_login import UserMixin
 
@@ -15,7 +16,7 @@ class BarUser(UserMixin):
             self.authenticated = False
             self.roles = []
         else:
-            item = json.loads(r.hmget('user_{0}'.format(username)).decode())
+            item = self.r.hgetall('user_{0}'.format(username))
             salt = ''.join(['$' + i for i in item['password'].split('$')[1:3]])
             self.authenticated = item['password'] == crypt.crypt(self.password, salt)
             self.roles = item['roles'].split(',') if self.is_authenticated else []
