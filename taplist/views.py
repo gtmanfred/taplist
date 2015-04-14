@@ -41,7 +41,7 @@ class Entry(MethodView):
             'content': form.alcohols.data,
             'location': location
         }
-        if re.match('~?[0-9]+\.?[0-9]*', beer['content']):
+        if re.match('^~?[0-9]+\.?[0-9]*$', beer['content']):
             beer['content'] = '%s %%' % beer['content']
 
         if form.pricepint.data != "":
