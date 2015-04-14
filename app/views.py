@@ -101,7 +101,7 @@ def get_json(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = beers([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+    beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
@@ -140,7 +140,7 @@ def bars(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = beers([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+    beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
