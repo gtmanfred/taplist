@@ -6,6 +6,7 @@ from app.login import BarUser
 from app.auth import role_required
 import redis
 from redis.sentinel import Sentinel
+import uuid
 import json
 import operator
 import re
@@ -36,7 +37,7 @@ def entry(location):
             'content': form.alcohols.data,
             'location': location
         }
-        if re.match('[0-9]+\.?[0-9]*', beer['content']):
+        if re.match('~?[0-9]+\.?[0-9]*', beer['content']):
             beer['content'] = '%s %%' % beer['content']
 
         if form.pricepint.data != "":
@@ -57,11 +58,12 @@ def entry(location):
 
         beer['active'] = False
 
-        r.set('beer_{0}_{1}_{2}'.format(
-            location,
-            form.brewery.data.replace(' ', ''),
-            form.beername.data.replace(' ', '')),
-            json.dumps(beer)
+        r.hmset(
+            'beer_{0}_{1}_{2}'.format(
+                location,
+                str(uuid.uuid4().get_hex().upper()[0:6])
+            ),
+            beer
         )
 
         r.save()
@@ -75,7 +77,7 @@ def scroll(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
+    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']], location=location)
@@ -87,7 +89,7 @@ def get_json(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
+    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return jsonify({'beers': [b for b in beers if b['active']]})
 
@@ -102,22 +104,21 @@ def editlist(location):
     #r = redis.Redis(connection_pool=pool)
     sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
     r = sentinel.master_for('mymaster', socket_timeout=0.1)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}*'.format(location))]
+    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}*'.format(location))]
     if request.method == 'POST':
         for beer in beers:
-            beername = 'beer_{0}_{1}_{2}'.format(
+            beername = 'beer_{0}_{1}'.format(
                 location,
-                beer['brewery'].replace(' ', ''),
-                beer['name'].replace(' ', '')
+                str(uuid.uuid4().get_hex().upper()[0:6])
             )
 
             beer['active'] = True if beername in \
                 request.form.getlist('checks') else False
-            r.set(beername, json.dumps(beer))
+            r.hmset(beername, beer)
             r.save()
         for beer in request.form.getlist('delete'):
             r.delete(beer)
-        beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
+        beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     if request.method == 'POST':
         return redirect(location)
@@ -131,7 +132,7 @@ def bars(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [json.loads(r.get(key).decode()) for key in r.keys('beer_{0}_*'.format(location))]
+    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']], location=location)
