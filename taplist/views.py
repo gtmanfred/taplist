@@ -1,17 +1,23 @@
-from flask import render_template, redirect, request, url_for, jsonify, session, flash
-from flask.views import MethodView
-from flask_login import login_required, login_user, logout_user, current_user
-from taplist.form import BeerForm, LoginForm
-from taplist.login import BarUser
-from taplist.auth import role_required
-import redis
-from redis.sentinel import Sentinel
-import collections
-from collections import OrderedDict
 import uuid
 import json
 import operator
 import re
+from collections import OrderedDict
+
+#flask stuff
+from flask import render_template, redirect, request, url_for, jsonify, session, flash
+from flask.views import MethodView
+from flask_login import login_required, login_user, logout_user, current_user
+
+#redis stuff
+import redis
+from redis.sentinel import Sentinel
+
+#taplist libs
+from taplist.utils import convert
+from taplist.form import BeerForm, LoginForm
+from taplist.login import BarUser
+from taplist.auth import role_required
 
 locations = [
         'broadway',
@@ -19,17 +25,6 @@ locations = [
         'gastropub',
         'thebridge'
         ]
-
-
-def convert(data):
-    if isinstance(data, basestring):
-        return data.decode('utf8')
-    elif isinstance(data, collections.Mapping):
-        return dict(map(convert, data.iteritems()))
-    elif isinstance(data, collections.Iterable):
-        return type(data)(map(convert, data))
-    else:
-        return data
 
 
 class Entry(MethodView):
