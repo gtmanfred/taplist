@@ -6,6 +6,7 @@ from app.login import BarUser
 from app.auth import role_required
 import redis
 from redis.sentinel import Sentinel
+import collections
 from collections import OrderedDict
 import uuid
 import json
@@ -18,6 +19,18 @@ locations = [
         'gastropub',
         'thebridge'
         ]
+
+
+def convert(data):
+    if isinstance(data, basestring):
+        return str(data)
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert, data))
+    else:
+        return data
+
 
 @app.route('/<location>/entry', methods=['GET', 'POST'])
 @login_required
@@ -76,7 +89,7 @@ def scroll(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
+    beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
@@ -88,7 +101,7 @@ def get_json(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
+    beers = beers([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
@@ -111,7 +124,7 @@ def editlist(location):
     r.save()
     beers = []
     for key in r.keys('beer_{0}_*'.format(location)):
-        beer = r.hgetall(key)
+        beer = convert(r.hgetall(key))
         beer['beername'] = key
         beers.append(beer)
     beers.sort(key=operator.itemgetter('brewery', 'name'))
@@ -127,7 +140,7 @@ def bars(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
+    beers = beers([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
