@@ -1,6 +1,5 @@
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
 from flask_login import login_required, login_user, logout_user, current_user
-from taplist import app
 from taplist.form import BeerForm, LoginForm
 from taplist.login import BarUser
 from taplist.auth import role_required
@@ -32,7 +31,6 @@ def convert(data):
         return data
 
 
-@app.route('/<location>/entry', methods=['GET', 'POST'])
 @login_required
 @role_required
 def entry(location):
@@ -83,7 +81,6 @@ def entry(location):
     else:
         return render_template('entry.html', title='Entry', form=form)
 
-@app.route('/<location>/scroll', methods=['GET'])
 def scroll(location):
     if location not in locations:
         return 'Unknown Location'
@@ -95,7 +92,6 @@ def scroll(location):
                            beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-@app.route('/<location>/json', methods=['GET'])
 def get_json(location):
     if location not in locations:
         return 'Unknown Location'
@@ -106,7 +102,6 @@ def get_json(location):
     return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
 
-@app.route('/<location>/edit', methods=['GET', 'POST'])
 @login_required
 @role_required
 def editlist(location):
@@ -133,8 +128,6 @@ def editlist(location):
     return render_template('edit.html', title='Beer List', beers=beers, location=location)
 
 
-@app.route('/<location>')
-@app.route('/<location>/')
 def bars(location):
     if location not in locations:
         return 'Unknown Location'
@@ -146,7 +139,6 @@ def bars(location):
                            beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-@app.route('/login', methods = ['GET', 'POST'])
 def login():
     if current_user.is_authenticated():
         return redirect(request.args.get('next') or '/')
@@ -167,7 +159,6 @@ def login():
         error = "Login failed"
     return render_template('login.html', login=True, next=next, error=error, form=form)
 
-@app.route('/logout')
 @login_required
 def logout():
     logout_user()
@@ -175,6 +166,5 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/')
 def index():
     return render_template('links.html', title='links', locations=locations)
