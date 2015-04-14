@@ -55,7 +55,7 @@ def entry(location):
         if hasattr(form.notes, 'data'):
             beer['notes'] = form.notes.data
 
-        beer['active'] = 'False'
+        beer['active'] = 'True' if form.active.data else 'False' 
 
         r.hmset(
             'beer_{0}_{1}'.format(

@@ -10,6 +10,7 @@ class BeerForm(Form):
     pricepint = TextField('pint price')
     pricehalf = TextField('half growler price')
     pricegrowler = TextField('growler price')
+    active = BooleanField('active', default = False)
     notes = TextField('Note')
 
 class LoginForm(Form):
