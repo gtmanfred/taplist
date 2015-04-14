@@ -23,7 +23,7 @@ locations = [
 
 def convert(data):
     if isinstance(data, basestring):
-        return str(data)
+        return data.decode('utf8')
     elif isinstance(data, collections.Mapping):
         return dict(map(convert, data.iteritems()))
     elif isinstance(data, collections.Iterable):
