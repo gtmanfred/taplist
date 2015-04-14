@@ -67,10 +67,10 @@ class Entry(MethodView):
         if location not in locations:
             return 'Unknown Location'
         form = BeerForm()
-        if 'name' in request.args:
+        beername = request.args.get('name', None)
+        if beername:
             pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
             r = redis.Redis(connection_pool=pool)
-            beername = request.args.get('name')
             beer = r.hgetall(beername)
             form.beername.data = beer['name']
             form.brewery.data = beer['brewery']
@@ -79,8 +79,20 @@ class Entry(MethodView):
             form.pricehalf.data = beer['half']
             form.pricegrowler.data = beer['growler']
             form.alcohols.data = beer['content']
-            form.db_beername.data = beername
-        return render_template('entry.html', title='Entry', form=form)
+            form.active.data = bool(beer['active'])
+        return render_template('entry.html', title='Entry', form=form, beername=beername)
+
+    def put(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        form = BeerForm()
+        beer = self._beer(form, location)
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+        r = sentinel.master_for('mymaster', socket_timeout=1)
+        r.hmset(request.args.get('name'), beer)
+
+        r.save()
+        return redirect('/{0}/entry'.format(location))
 
     def post(self, location):
         if location not in locations:
@@ -89,13 +101,16 @@ class Entry(MethodView):
         beer = self._beer(form, location)
         sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
         r = sentinel.master_for('mymaster', socket_timeout=1)
-        r.hmset(
-            'beer_{0}_{1}'.format(
-                location,
-                str(uuid.uuid4().get_hex().upper()[0:6])
-            ),
-            beer
-        )
+        if 'name' in request.args:
+            r.hmset(request.args.get('name'), beer)
+        else:
+            r.hmset(
+                'beer_{0}_{1}'.format(
+                    location,
+                    str(uuid.uuid4().get_hex().upper()[0:6])
+                ),
+                beer
+            )
 
         r.save()
         return redirect('/{0}/entry'.format(location))
