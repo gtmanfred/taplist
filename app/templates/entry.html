@@ -23,7 +23,7 @@
     <p>
         Notes: {{form.notes(size=80)}}
     </p>
-    <p>Active: <input type="checkbox" name="checks" value="{{ form.active }}"</p>
+    <p>Active: {{ form.active() }}</p>
     <p><input type="submit" value="Entry"></p>
 </form>
 {% endblock %}

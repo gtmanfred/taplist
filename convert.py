@@ -22,7 +22,8 @@ for location in ['huebner', 'broadway', 'gastropub', 'thebridge']:
             "brewery": entry[0].title(),
             "beername": entry[1].title().replace('*', "'"),
             "beertype": entry[2].title().replace('*', "'"),
-            "alcohols": entry[4].strip('%').strip()
+            "alcohols": entry[4].strip('%').strip(),
+            "active": True
         }
 
         if '/' in entry[3]:
