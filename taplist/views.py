@@ -1,9 +1,9 @@
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
 from flask_login import login_required, login_user, logout_user, current_user
-from app import app
-from app.form import BeerForm, LoginForm
-from app.login import BarUser
-from app.auth import role_required
+from taplist import app
+from taplist.form import BeerForm, LoginForm
+from taplist.login import BarUser
+from taplist.auth import role_required
 import redis
 from redis.sentinel import Sentinel
 import collections
