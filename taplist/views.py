@@ -33,15 +33,7 @@ class Entry(MethodView):
         role_required,
     ]
 
-    def get(self, location):
-        if location not in locations:
-            return 'Unknown Location'
-        form = BeerForm()
-        return render_template('entry.html', title='Entry', form=form)
-    
-    def post(self, location):
-        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
-        r = sentinel.master_for('mymaster', socket_timeout=1)
+    def _beer(self, form, location):
         beer = {
             'name': form.beername.data,
             'brewery': form.brewery.data,
@@ -69,7 +61,34 @@ class Entry(MethodView):
             beer['notes'] = form.notes.data
 
         beer['active'] = 'True' if form.active.data else 'False' 
+        return beer
 
+    def get(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        form = BeerForm()
+        if 'name' in request.args:
+            pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+            r = redis.Redis(connection_pool=pool)
+            beername = request.args.get('name')
+            beer = r.hgetall(beername)
+            form.beername.data = beer['name']
+            form.brewery.data = beer['brewery']
+            form.beertype.data = beer['type']
+            form.pricepint.data = beer['pint']
+            form.pricehalf.data = beer['half']
+            form.pricegrowler.data = beer['growler']
+            form.alcohols.data = beer['content']
+            form.db_beername.data = beername
+        return render_template('entry.html', title='Entry', form=form)
+
+    def post(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        form = BeerForm()
+        beer = self._beer(form, location)
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+        r = sentinel.master_for('mymaster', socket_timeout=1)
         r.hmset(
             'beer_{0}_{1}'.format(
                 location,

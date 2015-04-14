@@ -17,7 +17,7 @@
             {% for beer in beers -%}
                     <tr>
                         <td>{{ beer['brewery'] }}</td>
-                        <td>{{ beer['name']}}</td>
+                        <td><a href="{{ '/%s/entry?name=%s'|format(location, beer['beername']) }}">{{ beer['name']}}</a></td>
                         <td>{{ beer['type']}}</td>
                         {%- if beer['notes'] != "" %}
                         <td class="th4">{{ beer['notes'] }}</td>
