@@ -25,10 +25,10 @@
                         <td class="th4">{{ "$ %s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
                         {% endif %}
                         <td>{{ beer['content'] }}</td>
-                        <td><input id="test" type="checkbox" name="checks" value="{{ "beer_%s_%s_%s"|format(beer['location'], beer['brewery'], beer['name'])|replace(' ', '') }}"
-                            {%- if beer['active'] %} checked
+                        <td><input id="test" type="checkbox" name="checks" value="{{ beer['beername'] }}"
+                            {%- if beer['active'] == 'True' %} checked
                             {%- endif -%}></td>
-                        <td><input type="checkbox" name="delete" value="{{ "beer_%s_%s_%s"|format(beer['location'], beer['brewery'], beer['name'])|replace(' ', '') }}"</td>
+                        <td><input type="checkbox" name="delete" value="{{ beer['beername'] }}"</td>
                     </tr>
             {% endfor -%}
                 </tbody>

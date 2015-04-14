@@ -6,6 +6,7 @@ from app.login import BarUser
 from app.auth import role_required
 import redis
 from redis.sentinel import Sentinel
+from collections import OrderedDict
 import uuid
 import json
 import operator
@@ -26,10 +27,8 @@ def entry(location):
         return 'Unknown Location'
     form = BeerForm()
     if request.method == 'POST':
-        #pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-        #r = redis.Redis(connection_pool=pool)
-        sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-        r = sentinel.master_for('mymaster', socket_timeout=0.1)
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+        r = sentinel.master_for('mymaster', socket_timeout=1)
         beer = {
             'name': form.beername.data,
             'brewery': form.brewery.data,
@@ -56,10 +55,10 @@ def entry(location):
         if hasattr(form.notes, 'data'):
             beer['notes'] = form.notes.data
 
-        beer['active'] = False
+        beer['active'] = 'False'
 
         r.hmset(
-            'beer_{0}_{1}_{2}'.format(
+            'beer_{0}_{1}'.format(
                 location,
                 str(uuid.uuid4().get_hex().upper()[0:6])
             ),
@@ -80,7 +79,7 @@ def scroll(location):
     beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
-                           beers=[beer for beer in beers if beer['active']], location=location)
+                           beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
 @app.route('/<location>/json', methods=['GET'])
@@ -91,7 +90,7 @@ def get_json(location):
     r = redis.Redis(connection_pool=pool)
     beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
-    return jsonify({'beers': [b for b in beers if b['active']]})
+    return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
 
 @app.route('/<location>/edit', methods=['GET', 'POST'])
@@ -100,25 +99,21 @@ def get_json(location):
 def editlist(location):
     if location not in locations:
         return 'Unknown Location'
-    #pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-    #r = redis.Redis(connection_pool=pool)
-    sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-    r = sentinel.master_for('mymaster', socket_timeout=0.1)
-    beers = [r.hgetall(key) for key in r.keys('beer_{0}*'.format(location))]
+    sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+    r = sentinel.master_for('mymaster', socket_timeout=1)
     if request.method == 'POST':
-        for beer in beers:
-            beername = 'beer_{0}_{1}'.format(
-                location,
-                str(uuid.uuid4().get_hex().upper()[0:6])
-            )
-
-            beer['active'] = True if beername in \
-                request.form.getlist('checks') else False
-            r.hmset(beername, beer)
-            r.save()
+        beers = {key: r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))}
+        for beername, beer in beers.items():
+            r.hset(beername, 'active', 'True' if beername in request.form.getlist('checks') else 'False')
+            #r.hmset(beername, beer)
         for beer in request.form.getlist('delete'):
             r.delete(beer)
-        beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
+    r.save()
+    beers = []
+    for key in r.keys('beer_{0}_*'.format(location)):
+        beer = r.hgetall(key)
+        beer['beername'] = key
+        beers.append(beer)
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     if request.method == 'POST':
         return redirect(location)
@@ -135,7 +130,7 @@ def bars(location):
     beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
-                           beers=[beer for beer in beers if beer['active']], location=location)
+                           beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
 @app.route('/login', methods = ['GET', 'POST'])
