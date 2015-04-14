@@ -1,4 +1,5 @@
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
+from flask.views import MethodView
 from flask_login import login_required, login_user, logout_user, current_user
 from taplist.form import BeerForm, LoginForm
 from taplist.login import BarUser
@@ -31,13 +32,19 @@ def convert(data):
         return data
 
 
-@login_required
-@role_required
-def entry(location):
-    if location not in locations:
-        return 'Unknown Location'
-    form = BeerForm()
-    if request.method == 'POST':
+class Entry(MethodView):
+    decorators=[
+        login_required,
+        role_required,
+    ]
+
+    def get(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        form = BeerForm()
+        return render_template('entry.html', title='Entry', form=form)
+    
+    def post(self, location):
         sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
         r = sentinel.master_for('mymaster', socket_timeout=1)
         beer = {
@@ -78,74 +85,102 @@ def entry(location):
 
         r.save()
         return redirect('/{0}/entry'.format(location))
-    else:
-        return render_template('entry.html', title='Entry', form=form)
-
-def scroll(location):
-    if location not in locations:
-        return 'Unknown Location'
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-    r = redis.Redis(connection_pool=pool)
-    beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
-    beers.sort(key=operator.itemgetter('brewery', 'name'))
-    return render_template('scroll.html', title='Beer List',
-                           beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-def get_json(location):
-    if location not in locations:
-        return 'Unknown Location'
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-    r = redis.Redis(connection_pool=pool)
-    beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
-    beers.sort(key=operator.itemgetter('brewery', 'name'))
-    return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
+class Scroll(MethodView):
+    def get(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+        r = redis.Redis(connection_pool=pool)
+        beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        return render_template('scroll.html', title='Beer List',
+                               beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-@login_required
-@role_required
-def editlist(location):
-    if location not in locations:
-        return 'Unknown Location'
-    sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
-    r = sentinel.master_for('mymaster', socket_timeout=1)
-    if request.method == 'POST':
+class Json(MethodView):
+    def get(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+        r = redis.Redis(connection_pool=pool)
+        beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
+
+
+class Edit(MethodView):
+    decorators=[
+        login_required,
+        role_required,
+    ]
+
+    def get(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+        r = sentinel.master_for('mymaster', socket_timeout=1)
+        beers = []
+        for key in r.keys('beer_{0}_*'.format(location)):
+            beer = convert(r.hgetall(key))
+            beer['beername'] = key
+            beers.append(beer)
+        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        return render_template('edit.html', title='Beer List', beers=beers, location=location)
+
+    def post(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+        r = sentinel.master_for('mymaster', socket_timeout=1)
         beers = {key: r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))}
+
         for beername, beer in beers.items():
             r.hset(beername, 'active', 'True' if beername in request.form.getlist('checks') else 'False')
-            #r.hmset(beername, beer)
+
         for beer in request.form.getlist('delete'):
             r.delete(beer)
-    r.save()
-    beers = []
-    for key in r.keys('beer_{0}_*'.format(location)):
-        beer = convert(r.hgetall(key))
-        beer['beername'] = key
-        beers.append(beer)
-    beers.sort(key=operator.itemgetter('brewery', 'name'))
-    if request.method == 'POST':
+
+        r.save()
+        beers = []
+        for key in r.keys('beer_{0}_*'.format(location)):
+            beer = convert(r.hgetall(key))
+            beer['beername'] = key
+            beers.append(beer)
+
+        beers.sort(key=operator.itemgetter('brewery', 'name'))
+
         return redirect(location)
-    return render_template('edit.html', title='Beer List', beers=beers, location=location)
 
 
-def bars(location):
-    if location not in locations:
-        return 'Unknown Location'
-    pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
-    r = redis.Redis(connection_pool=pool)
-    beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
-    beers.sort(key=operator.itemgetter('brewery', 'name'))
-    return render_template('index.html', title='Beer List',
-                           beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
+class BarLists(MethodView):
+    def get(self, location):
+        if location not in locations:
+            return 'Unknown Location'
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+        r = redis.Redis(connection_pool=pool)
+        beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        return render_template('index.html', title='Beer List',
+                               beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-def login():
-    if current_user.is_authenticated():
-        return redirect(request.args.get('next') or '/')
-    error = None
-    next = request.args.get('next')
-    form = LoginForm()
-    if request.method == 'POST':
+class Login(MethodView):
+    def get(self):
+        if current_user.is_authenticated():
+            return redirect(request.args.get('next') or '/')
+        error = None
+        next = request.args.get('next')
+        form = LoginForm()
+        return render_template('login.html', login=True, next=next, error=error, form=form)
+
+    def post(self):
+        if current_user.is_authenticated():
+            return redirect(request.args.get('next') or '/')
+        error = None
+        next = request.args.get('next')
+        form = LoginForm()
         username = request.form['username']
         password = request.form['password']
 
@@ -157,14 +192,17 @@ def login():
             session['roles'] = user.roles
             return redirect(next or url_for('index', error=error))
         error = "Login failed"
-    return render_template('login.html', login=True, next=next, error=error, form=form)
-
-@login_required
-def logout():
-    logout_user()
-    flash('You have logged out!')
-    return redirect(url_for('index'))
+        return render_template('login.html', login=True, next=next, error=error, form=form)
 
 
-def index():
-    return render_template('links.html', title='links', locations=locations)
+class Logout(MethodView):
+    decorators = [login_required]
+    def get(self):
+        logout_user()
+        flash('You have logged out!')
+        return redirect(url_for('index'))
+
+
+class Index(MethodView):
+    def get(self):
+        return render_template('links.html', title='links', locations=locations)
