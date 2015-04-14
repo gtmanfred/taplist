@@ -77,7 +77,7 @@ def scroll(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
+    beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('scroll.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']], location=location)
@@ -89,7 +89,7 @@ def get_json(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
+    beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return jsonify({'beers': [b for b in beers if b['active']]})
 
@@ -104,7 +104,7 @@ def editlist(location):
     #r = redis.Redis(connection_pool=pool)
     sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
     r = sentinel.master_for('mymaster', socket_timeout=0.1)
-    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}*'.format(location))]
+    beers = [r.hgetall(key) for key in r.keys('beer_{0}*'.format(location))]
     if request.method == 'POST':
         for beer in beers:
             beername = 'beer_{0}_{1}'.format(
@@ -118,7 +118,7 @@ def editlist(location):
             r.save()
         for beer in request.form.getlist('delete'):
             r.delete(beer)
-        beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
+        beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     if request.method == 'POST':
         return redirect(location)
@@ -132,7 +132,7 @@ def bars(location):
         return 'Unknown Location'
     pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.Redis(connection_pool=pool)
-    beers = [r.hgetall(key).decode() for key in r.keys('beer_{0}_*'.format(location))]
+    beers = [r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))]
     beers.sort(key=operator.itemgetter('brewery', 'name'))
     return render_template('index.html', title='Beer List',
                            beers=[beer for beer in beers if beer['active']], location=location)
