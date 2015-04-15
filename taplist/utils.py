@@ -12,6 +12,6 @@ def convert(data):
 
 def get_colors(location, config):
     for owner, its in config.items():
-        if location in its['locations']
+        if location in its['locations']:
             return its.get('colors', {})
     return {}
