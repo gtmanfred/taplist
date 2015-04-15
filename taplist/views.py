@@ -24,7 +24,7 @@ from taplist.auth import role_required
 
 class TaplistView(MethodView):
     def __init__(self, *args, **kwargs):
-        configfile = os.path.expanduser('~/config.yml')
+        configfile = '/home/taplist/config.yml'
         with open(configfile) as yml:
             self.config = yaml.load(yml)
 
