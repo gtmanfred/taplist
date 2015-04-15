@@ -2,6 +2,9 @@ import uuid
 import json
 import operator
 import re
+import yaml
+import os
+
 from collections import OrderedDict
 
 #flask stuff
@@ -21,12 +24,13 @@ from taplist.auth import role_required
 
 class TaplistView(MethodView):
     def __init__(self, *args, **kwargs):
-        self.locations = [
-            'broadway',
-            'huebner',
-            'gastropub',
-            'thebridge'
-        ]
+        configfile = os.path.expanduser('~/config.yml')
+        with open(configfile) as yml:
+            self.config = yaml.load(yml)
+
+        self.locations = []
+        for owner, it in self.config['owners'].items():
+            self.locations.extend(it.get('locations', []))
         super(TaplistView, self).__init__(*args, **kwargs)
 
 class Entry(TaplistView):

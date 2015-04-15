@@ -5,3 +5,4 @@ Flask-RESTful
 requests
 redis
 beautifulsoup4
+pyyaml
