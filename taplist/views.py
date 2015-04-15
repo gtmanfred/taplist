@@ -19,15 +19,17 @@ from taplist.form import BeerForm, LoginForm
 from taplist.login import BarUser
 from taplist.auth import role_required
 
-locations = [
-        'broadway',
-        'huebner',
-        'gastropub',
-        'thebridge'
+class TaplistView(MethodView):
+    def __init__(self, *args, **kwargs):
+        self.locations = [
+            'broadway',
+            'huebner',
+            'gastropub',
+            'thebridge'
         ]
+        super(TaplistView, self).__init__(*args, **kwargs)
 
-
-class Entry(MethodView):
+class Entry(TaplistView):
     decorators=[
         login_required,
         role_required,
@@ -64,7 +66,7 @@ class Entry(MethodView):
         return beer
 
     def get(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
         beername = request.args.get('name', None)
@@ -83,7 +85,7 @@ class Entry(MethodView):
         return render_template('entry.html', title='Entry', form=form, beername=beername)
 
     def put(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
         beer = self._beer(form, location)
@@ -95,7 +97,7 @@ class Entry(MethodView):
         return redirect('/{0}/entry'.format(location))
 
     def post(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
         beer = self._beer(form, location)
@@ -116,9 +118,9 @@ class Entry(MethodView):
         return redirect('/{0}/entry'.format(location))
 
 
-class Scroll(MethodView):
+class Scroll(TaplistView):
     def get(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
@@ -128,9 +130,9 @@ class Scroll(MethodView):
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-class Json(MethodView):
+class Json(TaplistView):
     def get(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
@@ -139,14 +141,14 @@ class Json(MethodView):
         return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
 
-class Edit(MethodView):
+class Edit(TaplistView):
     decorators=[
         login_required,
         role_required,
     ]
 
     def get(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
         r = sentinel.master_for('mymaster', socket_timeout=1)
@@ -159,7 +161,7 @@ class Edit(MethodView):
         return render_template('edit.html', title='Beer List', beers=beers, location=location)
 
     def post(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
         r = sentinel.master_for('mymaster', socket_timeout=1)
@@ -183,9 +185,9 @@ class Edit(MethodView):
         return redirect(location)
 
 
-class BarLists(MethodView):
+class BarLists(TaplistView):
     def get(self, location):
-        if location not in locations:
+        if location not in self.locations:
             return 'Unknown Location'
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
@@ -195,7 +197,7 @@ class BarLists(MethodView):
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
 
 
-class Login(MethodView):
+class Login(TaplistView):
     def get(self):
         if current_user.is_authenticated():
             return redirect(request.args.get('next') or '/')
@@ -224,7 +226,7 @@ class Login(MethodView):
         return render_template('login.html', login=True, next=next, error=error, form=form)
 
 
-class Logout(MethodView):
+class Logout(TaplistView):
     decorators = [login_required]
     def get(self):
         logout_user()
@@ -232,6 +234,6 @@ class Logout(MethodView):
         return redirect(url_for('index'))
 
 
-class Index(MethodView):
+class Index(TaplistView):
     def get(self):
-        return render_template('links.html', title='links', locations=locations)
+        return render_template('links.html', title='links', locations=self.locations)
