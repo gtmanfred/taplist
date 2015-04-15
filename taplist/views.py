@@ -17,7 +17,7 @@ import redis
 from redis.sentinel import Sentinel
 
 #taplist libs
-from taplist.utils import convert
+from taplist.utils import convert, get_colors
 from taplist.form import BeerForm, LoginForm
 from taplist.login import BarUser
 from taplist.auth import role_required
@@ -126,7 +126,7 @@ class Scroll(TaplistView):
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
-        colors = utils.get_colors(location)
+        colors = get_colors(location, self.config)
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
@@ -156,7 +156,7 @@ class Edit(TaplistView):
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
-        colors = utils.get_colors(location)
+        colors = get_colors(location, self.config)
         sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
         r = sentinel.master_for('mymaster', socket_timeout=1)
         beers = []
@@ -196,7 +196,7 @@ class BarLists(TaplistView):
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
-        colors = utils.get_colors(location)
+        colors = get_colors(location, self.config)
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
