@@ -10,8 +10,8 @@ def convert(data):
     else:
         return data
 
-def get_colors(location, config).items():
-    for owner, its in config:
+def get_colors(location, config):
+    for owner, its in config.items():
         if location in its['locations']
             return its.get('colors', {})
     return {}
