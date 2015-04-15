@@ -26,10 +26,10 @@ class TaplistView(MethodView):
     def __init__(self, *args, **kwargs):
         configfile = '/home/taplist/config.yml'
         with open(configfile) as yml:
-            self.config = yaml.load(yml)
+            self.config = yaml.load(yml)['owners']
 
         self.locations = []
-        for owner, it in self.config['owners'].items():
+        for owner, it in self.config.items():
             self.locations.extend(it.get('locations', []))
         super(TaplistView, self).__init__(*args, **kwargs)
 
@@ -126,12 +126,14 @@ class Scroll(TaplistView):
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
+        colors = utils.get_colors(location)
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('scroll.html', title='Beer List',
-                               beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
+                               beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
+                               colors=colors)
 
 
 class Json(TaplistView):
@@ -154,6 +156,7 @@ class Edit(TaplistView):
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
+        colors = utils.get_colors(location)
         sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
         r = sentinel.master_for('mymaster', socket_timeout=1)
         beers = []
@@ -162,7 +165,7 @@ class Edit(TaplistView):
             beer['beername'] = key
             beers.append(beer)
         beers.sort(key=operator.itemgetter('brewery', 'name'))
-        return render_template('edit.html', title='Beer List', beers=beers, location=location)
+        return render_template('edit.html', title='Beer List', beers=beers, location=location, colors=colors)
 
     def post(self, location):
         if location not in self.locations:
@@ -193,12 +196,14 @@ class BarLists(TaplistView):
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
+        colors = utils.get_colors(location)
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('index.html', title='Beer List',
-                               beers=[beer for beer in beers if beer['active'] == 'True'], location=location)
+                               beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
+                               colors=colors)
 
 
 class Login(TaplistView):

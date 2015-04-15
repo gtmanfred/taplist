@@ -9,3 +9,9 @@ def convert(data):
         return type(data)(map(convert, data))
     else:
         return data
+
+def get_colors(location, config).items():
+    for owner, its in config:
+        if location in its['locations']
+            return its.get('colors', {})
+    return {}
