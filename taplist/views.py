@@ -85,7 +85,7 @@ class Entry(TaplistView):
             form.pricehalf.data = beer['half']
             form.pricegrowler.data = beer['growler']
             form.alcohols.data = beer['content']
-            form.active.data = bool(beer['active'])
+            form.active.data = beer['active'] == 'True'
         return render_template('entry.html', title='Entry', form=form, beername=beername)
 
     def put(self, location):
