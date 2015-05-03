@@ -30,7 +30,7 @@ class RedisSessionInterface(SessionInterface):
                 redis_object = redis.Redis(connection_pool=pool)
             else:
                 sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-                redis_object = sentinel.master_for('mymaster', socket_timeout=0.1, db=2, redis_class=Redis)
+                redis_object = sentinel.master_for('mymaster', socket_timeout=0.1, db=2, redis_class=redis.Redis)
         self.redis = redis_object
         self.prefix = prefix
 

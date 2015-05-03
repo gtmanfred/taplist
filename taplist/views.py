@@ -10,7 +10,7 @@ from collections import OrderedDict
 #flask stuff
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
 from flask.views import MethodView
-from flask_login import login_required, login_user, logout_user, current_user
+from flask.ext.stormpath import groups_required, login_required
 
 #redis stuff
 import redis
@@ -19,8 +19,6 @@ from redis.sentinel import Sentinel
 #taplist libs
 from taplist.utils import convert, get_colors
 from taplist.form import BeerForm, LoginForm
-from taplist.login import BarUser
-from taplist.auth import role_required
 from taplist import app
 
 class TaplistView(MethodView):
@@ -35,12 +33,6 @@ class TaplistView(MethodView):
         super(TaplistView, self).__init__(*args, **kwargs)
 
 class Entry(TaplistView):
-    '''
-    decorators=[
-        login_required,
-        role_required,
-    ]
-    '''
 
     def _beer(self, form, location):
         beer = {
@@ -72,6 +64,8 @@ class Entry(TaplistView):
         beer['active'] = 'True' if form.active.data else 'False' 
         return beer
 
+    @login_required
+    @groups_required(['gastropub'])
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
@@ -91,6 +85,8 @@ class Entry(TaplistView):
             form.active.data = beer['active'] == 'True'
         return render_template('entry.html', title='Entry', form=form, beername=beername)
 
+    @login_required
+    @groups_required(['gastropub'])
     def put(self, location):
         if location not in self.locations:
             return 'Unknown Location'
@@ -107,6 +103,8 @@ class Entry(TaplistView):
         r.save()
         return redirect('/{0}/entry'.format(location))
 
+    @login_required
+    @groups_required(['gastropub'])
     def post(self, location):
         if location not in self.locations:
             return 'Unknown Location'
@@ -220,43 +218,10 @@ class BarLists(TaplistView):
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
                                colors=colors)
 
-
-class Login(TaplistView):
-    def get(self):
-        if current_user.is_authenticated():
-            return redirect(request.args.get('next') or '/')
-        error = None
-        next = request.args.get('next')
-        form = LoginForm()
-        return render_template('login.html', login=True, next=next, error=error, form=form)
-
-    def post(self):
-        if current_user.is_authenticated():
-            return redirect(request.args.get('next') or '/')
-        error = None
-        next = request.args.get('next')
-        form = LoginForm()
-        username = request.form['username']
-        password = request.form['password']
-
-        user = BarUser(username, password)
-        if user.is_authenticated():
-            login_user(user)
-            flash("You have logged in")
-            session['logged_in'] = True
-            session['roles'] = user.roles
-            return redirect(next or url_for('index', error=error))
-        error = "Login failed"
-        return render_template('login.html', login=True, next=next, error=error, form=form)
-
-
-class Logout(TaplistView):
-    decorators = [login_required]
-    def get(self):
-        logout_user()
-        flash('You have logged out!')
-        return redirect(url_for('index'))
-
+@app.route('/admin')
+@login_required
+def admin():
+    return 'Yes'
 
 class Index(TaplistView):
     def get(self):
