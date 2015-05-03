@@ -5,7 +5,7 @@
   <body>
     {% for location in locations %}
     <a href="{{ '/%s/'|format(location) }}">{{ location }}</a><br>
-    {%- if location in current_user.roles %}
+    {%- if location in groups %}
     <a href="{{ '/%s/edit'|format(location) }}">{{ location }} edit page</a><br>
     <a href="{{ '/%s/entry'|format(location) }}">{{ location }} entry page</a><br>
     {%- endif %}

@@ -16,6 +16,8 @@ class Config(object):
     STORMPATH_REQUIRE_GIVEN_NAME = False
     STORMPATH_REQUIRE_MIDDLE_NAME = False
     STORMPATH_REQUIRE_SURNAME = False
+
+    STORMPATH_ENABLE_FORGOT_PASSWORD = True
     _configfile = os.path.expanduser('~/config.yml')
     with open(_configfile) as yml:
         CONFIG = yaml.load(yml)['owners']

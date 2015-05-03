@@ -19,6 +19,7 @@ from redis.sentinel import Sentinel
 #taplist libs
 from taplist.utils import convert, get_colors
 from taplist.form import BeerForm
+from taplist.auth import role_required
 from taplist import app
 
 class TaplistView(MethodView):
@@ -30,7 +31,7 @@ class TaplistView(MethodView):
 class Entry(TaplistView):
     decorators=[
         login_required,
-        groups_required(app.config['LOCATIONS'], all=False)
+        role_required
     ]
 
     def _beer(self, form, location):
@@ -153,7 +154,7 @@ class Json(TaplistView):
 class Edit(TaplistView):
     decorators=[
         login_required,
-        groups_required(['gastropub'])
+        role_required
     ]
 
     def get(self, location):
@@ -230,4 +231,5 @@ def logout():
 
 class Index(TaplistView):
     def get(self):
-        return render_template('links.html', title='links', locations=self.locations)
+        groups = [g.group.name for g in getattr(user, 'group_memberships', [None]) if g is not None]
+        return render_template('links.html', title='links', locations=self.locations, groups=groups)
