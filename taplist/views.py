@@ -10,7 +10,7 @@ from collections import OrderedDict
 #flask stuff
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
 from flask.views import MethodView
-from flask.ext.stormpath import groups_required, login_required
+from flask.ext.stormpath import groups_required, login_required, logout_user
 
 #redis stuff
 import redis
@@ -33,6 +33,10 @@ class TaplistView(MethodView):
         super(TaplistView, self).__init__(*args, **kwargs)
 
 class Entry(TaplistView):
+    decorators=[
+        login_required,
+        groups_required(['gastropub'])
+    ]
 
     def _beer(self, form, location):
         beer = {
@@ -64,8 +68,6 @@ class Entry(TaplistView):
         beer['active'] = 'True' if form.active.data else 'False' 
         return beer
 
-    @login_required
-    @groups_required(['gastropub'])
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
@@ -85,8 +87,6 @@ class Entry(TaplistView):
             form.active.data = beer['active'] == 'True'
         return render_template('entry.html', title='Entry', form=form, beername=beername)
 
-    @login_required
-    @groups_required(['gastropub'])
     def put(self, location):
         if location not in self.locations:
             return 'Unknown Location'
@@ -103,8 +103,6 @@ class Entry(TaplistView):
         r.save()
         return redirect('/{0}/entry'.format(location))
 
-    @login_required
-    @groups_required(['gastropub'])
     def post(self, location):
         if location not in self.locations:
             return 'Unknown Location'
@@ -157,6 +155,10 @@ class Json(TaplistView):
 
 
 class Edit(TaplistView):
+    decorators=[
+        login_required,
+        groups_required(['gastropub'])
+    ]
 
     def get(self, location):
         if location not in self.locations:
@@ -218,10 +220,16 @@ class BarLists(TaplistView):
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
                                colors=colors)
 
-@app.route('/admin')
+
+@app.route('/logout')
 @login_required
-def admin():
-    return 'Yes'
+def logout():
+    """
+    Log out a logged in user.  Then redirect them back to the main page of the
+    site.
+    """
+    logout_user()
+    return redirect(url_for('index'))
 
 class Index(TaplistView):
     def get(self):
