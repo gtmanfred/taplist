@@ -6,10 +6,15 @@ from redis.sentinel import Sentinel
 import json
 import string
 from flask_login import UserMixin
+from taplist import app
 
 def create_user(username, password, roles):
-    sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-    r = sentinel.master_for('mymaster', socket_timeout=0.1, db=1)
+    if app.config['TESTING']:
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=1)
+        self.r = redis.Redis(connection_pool=pool)
+    else:
+        sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
+        r = sentinel.master_for('mymaster', socket_timeout=0.1, db=1)
     salt = '$6$'
     for i in range(8):
         salt += random.choice(string.ascii_letters + string.digits)

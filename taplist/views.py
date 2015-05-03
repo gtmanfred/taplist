@@ -21,10 +21,11 @@ from taplist.utils import convert, get_colors
 from taplist.form import BeerForm, LoginForm
 from taplist.login import BarUser
 from taplist.auth import role_required
+from taplist import app
 
 class TaplistView(MethodView):
     def __init__(self, *args, **kwargs):
-        configfile = '/home/taplist/config.yml'
+        configfile = os.path.expanduser('~/config.yml')
         with open(configfile) as yml:
             self.config = yaml.load(yml)['owners']
 
@@ -34,10 +35,12 @@ class TaplistView(MethodView):
         super(TaplistView, self).__init__(*args, **kwargs)
 
 class Entry(TaplistView):
+    '''
     decorators=[
         login_required,
         role_required,
     ]
+    '''
 
     def _beer(self, form, location):
         beer = {
@@ -93,8 +96,12 @@ class Entry(TaplistView):
             return 'Unknown Location'
         form = BeerForm()
         beer = self._beer(form, location)
-        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
-        r = sentinel.master_for('mymaster', socket_timeout=1)
+        if app.config['TESTING']:
+            pool = redis.ConnectionPool(host='localhost', port=6379)
+            r = redis.Redis(connection_pool=pool)
+        else:
+            sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+            r = sentinel.master_for('mymaster', socket_timeout=1)
         r.hmset(request.args.get('name'), beer)
 
         r.save()
@@ -105,8 +112,12 @@ class Entry(TaplistView):
             return 'Unknown Location'
         form = BeerForm()
         beer = self._beer(form, location)
-        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
-        r = sentinel.master_for('mymaster', socket_timeout=1)
+        if app.config['TESTING']:
+            pool = redis.ConnectionPool(host='localhost', port=6379)
+            r = redis.Redis(connection_pool=pool)
+        else:
+            sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+            r = sentinel.master_for('mymaster', socket_timeout=1)
         if 'name' in request.args:
             r.hmset(request.args.get('name'), beer)
         else:
@@ -148,17 +159,17 @@ class Json(TaplistView):
 
 
 class Edit(TaplistView):
-    decorators=[
-        login_required,
-        role_required,
-    ]
 
     def get(self, location):
         if location not in self.locations:
             return 'Unknown Location'
         colors = get_colors(location, self.config)
-        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
-        r = sentinel.master_for('mymaster', socket_timeout=1)
+        if app.config['TESTING']:
+            pool = redis.ConnectionPool(host='localhost', port=6379)
+            r = redis.Redis(connection_pool=pool)
+        else:
+            sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+            r = sentinel.master_for('mymaster', socket_timeout=1)
         beers = []
         for key in r.keys('beer_{0}_*'.format(location)):
             beer = convert(r.hgetall(key))
@@ -170,8 +181,12 @@ class Edit(TaplistView):
     def post(self, location):
         if location not in self.locations:
             return 'Unknown Location'
-        sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
-        r = sentinel.master_for('mymaster', socket_timeout=1)
+        if app.config['TESTING']:
+            pool = redis.ConnectionPool(host='localhost', port=6379)
+            r = redis.Redis(connection_pool=pool)
+        else:
+            sentinel = Sentinel([('localhost', 26379)], socket_timeout=1)
+            r = sentinel.master_for('mymaster', socket_timeout=1)
         beers = {key: r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))}
 
         for beername, beer in beers.items():

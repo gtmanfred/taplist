@@ -11,7 +11,8 @@ for location in ['huebner', 'broadway', 'gastropub', 'thebridge']:
         cols = tr.findAll('td')
         entry = [x.text for x in cols]
         print(entry)
-        if entry[0][-1] == '*':
+        print(location)
+        if entry[0] and entry[0][-1] == '*':
             entry[0] = entry[0].replace('*', "'")
             entry[0] = entry[0][:-1]
             entry[0] += '*'
@@ -33,7 +34,7 @@ for location in ['huebner', 'broadway', 'gastropub', 'thebridge']:
             payload["notes"] = entry[3]
 
         try:
-            r = requests.post('http://localhost/{0}/entry'.format(location), data=payload)
+            r = requests.post('http://localhost:4000/{0}/entry'.format(location), data=payload)
         except Exception as exc:
             payload['pricepint'] = entry[3]
-            r = requests.post('http://localhost/{0}/entry'.format(location), data=payload)
+            r = requests.post('http://localhost:4000/{0}/entry'.format(location), data=payload)

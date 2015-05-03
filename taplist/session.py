@@ -1,10 +1,11 @@
 import pickle
+import redis
 from datetime import timedelta
 from uuid import uuid4
-from redis import Redis
 from redis.sentinel import Sentinel
 from werkzeug.datastructures import CallbackDict
 from flask.sessions import SessionInterface, SessionMixin
+from taplist import app
 
 
 class RedisSession(CallbackDict, SessionMixin):
@@ -22,11 +23,15 @@ class RedisSessionInterface(SessionInterface):
     serializer = pickle
     session_class = RedisSession
 
-    def __init__(self, redis=None, prefix='session:'):
-        if redis is None:
-            sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
-            redis = sentinel.master_for('mymaster', socket_timeout=0.1, db=2, redis_class=Redis)
-        self.redis = redis
+    def __init__(self, redis_object=None, prefix='session:'):
+        if redis_object is None:
+            if app.config['TESTING']:
+                pool = redis.ConnectionPool(host='localhost', port=6379, db=2)
+                redis_object = redis.Redis(connection_pool=pool)
+            else:
+                sentinel = Sentinel([('localhost', 26379)], socket_timeout=0.1)
+                redis_object = sentinel.master_for('mymaster', socket_timeout=0.1, db=2, redis_class=Redis)
+        self.redis = redis_object
         self.prefix = prefix
 
     def generate_sid(self):

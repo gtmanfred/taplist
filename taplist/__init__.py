@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_login import LoginManager
-from taplist import login, views
-from taplist.session import RedisSessionInterface
+import os
 
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object('config.{0}'.format(os.getenv('APP_SETTINGS', 'Config')))
 app.debug=True
+
+from taplist.session import RedisSessionInterface
+from taplist import login, views
 
 login_manager = LoginManager()
 login_manager.init_app(app)
