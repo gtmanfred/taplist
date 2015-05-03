@@ -13,8 +13,3 @@ class BeerForm(Form):
     db_beername = TextField()
     active = BooleanField()
     notes = TextField('Note')
-
-class LoginForm(Form):
-    username = TextField('username', validators = [Required()])
-    password = PasswordField('password', validators = [Required()])
-    remember_me = BooleanField('remember_me', default = False)

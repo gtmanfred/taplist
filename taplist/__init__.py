@@ -8,10 +8,7 @@ app.config.from_object('config.{0}'.format(os.getenv('APP_SETTINGS', 'Config')))
 StormpathManager(app)
 app.debug=True
 
-from taplist.session import RedisSessionInterface
 from taplist import views
-
-#app.session_interface = RedisSessionInterface()
 
 app.add_url_rule('/<location>/entry', view_func=views.Entry.as_view('entry'), methods=['GET', 'POST', 'PUT'])
 app.add_url_rule('/<location>/scroll', view_func=views.Scroll.as_view('scroll'), methods=['GET'])

@@ -18,7 +18,7 @@ from redis.sentinel import Sentinel
 
 #taplist libs
 from taplist.utils import convert, get_colors
-from taplist.form import BeerForm, LoginForm
+from taplist.form import BeerForm
 from taplist import app
 
 class TaplistView(MethodView):
