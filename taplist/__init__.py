@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_login import LoginManager
 from flask.ext.stormpath import StormpathManager
 import os
 

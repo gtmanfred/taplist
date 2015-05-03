@@ -10,7 +10,7 @@ from collections import OrderedDict
 #flask stuff
 from flask import render_template, redirect, request, url_for, jsonify, session, flash
 from flask.views import MethodView
-from flask.ext.stormpath import groups_required, login_required, logout_user
+from flask.ext.stormpath import groups_required, login_required, logout_user, user
 
 #redis stuff
 import redis
@@ -23,19 +23,14 @@ from taplist import app
 
 class TaplistView(MethodView):
     def __init__(self, *args, **kwargs):
-        configfile = os.path.expanduser('~/config.yml')
-        with open(configfile) as yml:
-            self.config = yaml.load(yml)['owners']
-
-        self.locations = []
-        for owner, it in self.config.items():
-            self.locations.extend(it.get('locations', []))
+        self.locations = app.config['LOCATIONS']
+        self.config = app.config['CONFIG']
         super(TaplistView, self).__init__(*args, **kwargs)
 
 class Entry(TaplistView):
     decorators=[
         login_required,
-        groups_required(['gastropub'])
+        groups_required(app.config['LOCATIONS'], all=False)
     ]
 
     def _beer(self, form, location):
@@ -69,6 +64,7 @@ class Entry(TaplistView):
         return beer
 
     def get(self, location):
+        #print([g.group.name for g in user.group_memberships])
         if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
@@ -92,7 +88,7 @@ class Entry(TaplistView):
             return 'Unknown Location'
         form = BeerForm()
         beer = self._beer(form, location)
-        if app.config['TESTING']:
+        if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
             r = redis.Redis(connection_pool=pool)
         else:
@@ -108,7 +104,7 @@ class Entry(TaplistView):
             return 'Unknown Location'
         form = BeerForm()
         beer = self._beer(form, location)
-        if app.config['TESTING']:
+        if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
             r = redis.Redis(connection_pool=pool)
         else:
@@ -164,7 +160,7 @@ class Edit(TaplistView):
         if location not in self.locations:
             return 'Unknown Location'
         colors = get_colors(location, self.config)
-        if app.config['TESTING']:
+        if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
             r = redis.Redis(connection_pool=pool)
         else:
@@ -181,7 +177,7 @@ class Edit(TaplistView):
     def post(self, location):
         if location not in self.locations:
             return 'Unknown Location'
-        if app.config['TESTING']:
+        if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
             r = redis.Redis(connection_pool=pool)
         else:
@@ -229,6 +225,7 @@ def logout():
     site.
     """
     logout_user()
+    session.clear()
     return redirect(url_for('index'))
 
 class Index(TaplistView):

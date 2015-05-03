@@ -1,8 +1,9 @@
 import os.path
+import yaml
 
 class Config(object):
     CSRF_ENABLED = True
-    TESTING = False
+    DEVEL = False
     SECRET_KEY = 'you-will-never-guess'
     SECRET_KEY = 'someprivatestringhere'
     STORMPATH_API_KEY_FILE = os.path.expanduser('~/.apiKey.properties')
@@ -15,7 +16,14 @@ class Config(object):
     STORMPATH_REQUIRE_GIVEN_NAME = False
     STORMPATH_REQUIRE_MIDDLE_NAME = False
     STORMPATH_REQUIRE_SURNAME = False
+    _configfile = os.path.expanduser('~/config.yml')
+    with open(_configfile) as yml:
+        CONFIG = yaml.load(yml)['owners']
+
+    LOCATIONS = []
+    for owner, it in CONFIG.items():
+        LOCATIONS.extend(it.get('locations', []))
 
 
 class TestingConfig(Config):
-    TESTING = True
+    DEVEL = True
