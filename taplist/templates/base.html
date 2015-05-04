@@ -1,23 +1,21 @@
 <html>
   <head>
     <title>TV Beer Listing ({{ location }}) </title>
-<!--
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
--->
     <meta charset="utf-8">
-
     <!-- Browser favicon -->
     <link rel="shortcut icon" href="//www.bighopsgrowlerstation.com/img/favicon.ico">
-
     <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen"> -->
-
-
     <style>
-body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; font-size: 1.5em; font-weight:bold; overflow:hidden;}
+        body { 
+          font-family: 'Open Sans', sans-serif;
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          font-size: 1.5em;
+          font-weight:bold;
+          overflow:hidden;
+        }
         .table tbody>tr>td {line-height:22px;}
         .table-condensed tbody>tr>td {padding: 0px; padding-left: 5px; }
         .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { background-color: #{{colors.get('oddbg', 'c7ffa0')}}; }
@@ -36,9 +34,64 @@ body { font-family: 'Open Sans', sans-serif; text-rendering: optimizeLegibility;
         .td3 {width:25%;}
         .td4 {width:20%;}
         .td5 {width:5%;}
-        .footer {position:absolute;bottom:0;height:25px;width:100%;-webkit-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);-moz-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);border-top: 1px solid #DDD;text-align:right;padding-right:5px;font-size:1.2em;background:#{{colors.get('footerbg', 'BF162C')}}; color:#{{colors.get('footerfg', '000000')}};}
+        .footer {
+          position:absolute;
+          bottom:0;
+          height:25px;
+          width:100%;
+          -webkit-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);
+          -moz-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);
+          box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);
+          border-top: 1px solid #DDD;
+          text-align:right;
+          padding-right:5px;
+          font-size:1.2em;
+          background:#{{colors.get('footerbg', 'BF162C')}};
+          color:#{{colors.get('footerfg', '000000')}};
+        }
     </style>
-    <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%- if current_user.is_authenticated() %}
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <p class="navbar-brand">Beer!</p>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">View <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in locations%}
+                <li><a href="/{{location}}/">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in roles %}
+                <li><a href="/{{location}}/edit">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Entry <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in roles %}
+                <li><a href="/{{location}}/entry">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {%- endif %}
     </head>
     <body>
         {% block content %}{% endblock %}
