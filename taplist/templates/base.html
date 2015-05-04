@@ -1,7 +1,6 @@
 <html>
   <head>
     <title>TV Beer Listing ({{ location }}) </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Browser favicon -->
     <link rel="shortcut icon" href="//www.bighopsgrowlerstation.com/img/favicon.ico">
@@ -57,10 +56,14 @@
           {% endif %}
         }
     </style>
+    <!--
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js" type="text/javascript"></script>
+    -->
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     {%- if current_user.is_authenticated() %}
     <nav class="navbar navbar-default">
       <div class="container-fluid">
