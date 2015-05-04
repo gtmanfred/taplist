@@ -1,9 +1,11 @@
 from flask import Flask
 from flask.ext.stormpath import StormpathManager
+from flask_bootstrap import Bootstrap
 import os
 
 app = Flask(__name__)
 app.config.from_object('config.{0}'.format(os.getenv('APP_SETTINGS', 'Config')))
+Bootstrap(app)
 StormpathManager(app)
 app.debug=True
 

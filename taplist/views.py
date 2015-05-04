@@ -104,6 +104,7 @@ class Entry(TaplistView):
         if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
+        print(request.form)
         beer = self._beer(form, location)
         if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
