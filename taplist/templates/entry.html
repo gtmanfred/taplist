@@ -1,53 +1,5 @@
-<html>
-  <head>
-    <title>Entry</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-      form {
-        width: 50%;
-      }
-    </style>
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <p class="navbar-brand">Beer!</p>
-        </div>
-
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">View <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                {%- for location in locations%}
-                <li><a href="/{{location}}/">{{location}}</a></li>
-                {%- endfor %}
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                {%- for location in roles %}
-                <li><a href="/{{location}}/edit">{{location}}</a></li>
-                {%- endfor %}
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Entry <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                {%- for location in roles %}
-                <li><a href="/{{location}}/entry">{{location}}</a></li>
-                {%- endfor %}
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block content -%}
     <form class="form-horizontal" action="" method="post" name="entry">
       {{form.hidden_tag()}}
       <div class="form-group">
@@ -102,5 +54,4 @@
       </div>
       <button value="Entry" type="submit" class="btn btn-default">Submit</button>
     </form>
-  </body>
-</html>
+{% endblock -%}

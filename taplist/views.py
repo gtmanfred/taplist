@@ -217,7 +217,7 @@ class BarLists(TaplistView):
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('index.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
-                               colors=colors)
+                               colors=colors, locations=self.locations, roles=self.groups)
 
 
 @app.route('/logout')

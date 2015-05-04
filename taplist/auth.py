@@ -11,7 +11,7 @@ def role_required(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
         role = request.view_args.get('location')
-        groups = [g.group.name for g in user.group_memberships]
+        groups = [g.group.name for g in getattr(user, 'group_memberships', [None]) if g is not None]
         if groups is None or role not in groups:
             abort(403, message='"%s" role required' % role)
         return func(*args, **kwargs)
