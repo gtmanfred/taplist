@@ -234,4 +234,4 @@ def logout():
 class Index(TaplistView):
     def get(self):
         groups = [g.group.name for g in getattr(user, 'group_memberships', [None]) if g is not None]
-        return render_template('links.html', title='links', locations=self.locations, groups=groups)
+        return render_template('links.html', title='links', locations=self.locations, roles=groups)

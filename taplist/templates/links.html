@@ -1,20 +1,113 @@
 <html>
   <head>
-      <title>{{ title }}</title>
+    <title>TV Beer Listing ({{ location }}) </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Browser favicon -->
+    <link rel="shortcut icon" href="//www.bighopsgrowlerstation.com/img/favicon.ico">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+
+    <style>
+        body {
+          font-family: 'Open Sans', sans-serif;
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          font-size: 1.5em;
+          font-weight:bold;
+          overflow:hidden;
+        }
+        input.entry {
+            width: 50%;
+        }
+        .table tbody>tr>td {line-height:22px;}
+        .table-condensed tbody>tr>td {padding: 0px; padding-left: 5px; }
+        {%- if colors %}
+        .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th { background-color: #{{colors.get('oddbg', 'c7ffa0')}}; }
+        .table-striped>tbody>tr:nth-child(even)>td, .table-striped>tbody>tr:nth-child(even)>th { background-color: #{{colors.get('evenbg', 'F4FCBB')}}; }
+        .table>thead {background:#{{colors.get('headbg', 'BF162C')}}; color:#{{colors.get('headfg', 'ffffff')}};}
+        {% endif %}
+        .hidescrollable {overflow-y: hidden;}
+        .scrollable {overflow-y: scroll;}
+        .bodycontainer {height: 94%; width: 100%; margin-top:-20px;overflow-y:scroll;}
+        .th1 {width:20%; font-size:1.2em;}
+        .th2 {width:30%; font-size:1.2em;}
+        .th3 {width:25%; font-size:1.2em;}
+        .th4 {width:20%; font-size:1.2em;}
+        .th5 {width:5%; font-size:1.2em;}
+        .td1 {width:20%;}
+        .td2 {width:30%;}
+        .td3 {width:25%;}
+        .td4 {width:20%;}
+        .td5 {width:5%;}
+        .footer {
+          position:absolute;
+          bottom:0;
+          height:25px;
+          width:100%;
+          -webkit-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);
+          -moz-box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);
+          box-shadow: 0px -1px 5px 0px rgba(0,0,0,0.75);
+          border-top: 1px solid #DDD;
+          text-align:right;
+          padding-right:5px;
+          font-size:1.2em;
+          {% if colors %}
+          background:#{{colors.get('footerbg', 'BF162C')}};
+          color:#{{colors.get('footerfg', '000000')}};
+          {% endif %}
+        }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <p class="navbar-brand">Beer!</p>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">View <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in locations%}
+                <li><a href="/{{location}}/">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+            {%- if current_user.is_authenticated() %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in roles %}
+                <li><a href="/{{location}}/edit">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Entry <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in roles %}
+                <li><a href="/{{location}}/entry">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a class="btn btn-default" href="/logout">Logout</a></li>
+          </ul>
+          {%- else %}
+          <ul class="nav navbar-nav navbar-right">
+            <li><a class="btn btn-default" href="/login">Login</a></li>
+          </ul>
+          {%- endif %}
+        </div>
+      </div>
+    </nav>
   </head>
   <body>
-    {% for location in locations %}
-    <a href="{{ '/%s/'|format(location) }}">{{ location }}</a><br>
-    {%- if location in groups %}
-    <a href="{{ '/%s/edit'|format(location) }}">{{ location }} edit page</a><br>
-    <a href="{{ '/%s/entry'|format(location) }}">{{ location }} entry page</a><br>
-    {%- endif %}
-    {% endfor %}
-    <br><br>
-    {%- if current_user.is_authenticated() %}
-    <a href="/logout">LOGOUT</a><br>
-    {%- else %}
-    <a href="/login">LOGIN</a><br>
-    {%- endif %}
+    <img src="/static/awesome.jpg" class="img-responsive" alt="Responsive image">
   </body>
-<html>
+</html>
