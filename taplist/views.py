@@ -24,6 +24,7 @@ from taplist import app
 
 class TaplistView(MethodView):
     def __init__(self, *args, **kwargs):
+        self.groups = [g.group.name for g in getattr(user, 'group_memberships', [None]) if g is not None]
         self.locations = app.config['LOCATIONS']
         self.config = app.config['CONFIG']
         super(TaplistView, self).__init__(*args, **kwargs)
@@ -82,7 +83,7 @@ class Entry(TaplistView):
             form.pricegrowler.data = beer['growler']
             form.alcohols.data = beer['content']
             form.active.data = beer['active'] == 'True'
-        return render_template('entry.html', title='Entry', form=form, beername=beername)
+        return render_template('entry.html', title='Entry', form=form, beername=beername, roles=self.groups, locations=self.locations)
 
     def put(self, location):
         if location not in self.locations:
@@ -174,7 +175,7 @@ class Edit(TaplistView):
             beer['beername'] = key
             beers.append(beer)
         beers.sort(key=operator.itemgetter('brewery', 'name'))
-        return render_template('edit.html', title='Beer List', beers=beers, location=location, colors=colors)
+        return render_template('edit.html', title='Beer List', beers=beers, location=location, colors=colors, roles=self.groups, locations=self.locations)
 
     def post(self, location):
         if location not in self.locations:

@@ -1,48 +1,103 @@
 <html>
   <head>
+    <title>Entry</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entry</title>
+    <style>
+      form {
+        width: 50%;
+      }
+    </style>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <p class="navbar-brand">Beer!</p>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">View <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in locations%}
+                <li><a href="/{{location}}/">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in roles %}
+                <li><a href="/{{location}}/edit">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Entry <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {%- for location in roles %}
+                <li><a href="/{{location}}/entry">{{location}}</a></li>
+                {%- endfor %}
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
   </head>
   <body>
-    <form action="" method="post" name="entry">
+    <form class="form-horizontal" action="" method="post" name="entry">
       {{form.hidden_tag()}}
       <div class="form-group">
-          {{form.brewery(class="form-control", placeholder="Enter Brewery")}}
+          <label class="col-sm-2 control-label" for="{{form.brewery.id}}">Brewery</label>
+          <div class="col-sm-10">
+            {{form.brewery(class="form-control", placeholder="Enter Brewery")}}
+          </div>
       </div>
       <div class="form-group">
-          <label for="{{form.brewery.id}}">Brewery</label>
-          {{form.brewery(class="form-control", placeholder="Enter Brewery")}}
+          <label class="col-sm-2 control-label" for="{{form.beername.id}}">BeerName</label>
+          <div class="col-sm-10">
+            {{form.beername(class="form-control", placeholder="Enter Beer Name")}}
+          </div>
       </div>
       <div class="form-group">
-          <label for="{{form.beertype.id}}">Style</label>
-          {{form.beertype(class="form-control", placeholder="Enter Type")}}
+          <label class="col-sm-2 control-label" for="{{form.beertype.id}}">Style</label>
+          <div class="col-sm-10">
+            {{form.beertype(class="form-control", placeholder="Enter Type")}}
+          </div>
       </div>
       <div class="form-group">
-          <label for="{{form.alcohols.id}}">ABV</label>
-          {{form.alcohols(class="form-control", placeholder="Enter ABV")}}
+          <label class="col-sm-2 control-label"  for="{{form.alcohols.id}}">ABV</label>
+          <div class="col-sm-10">
+            {{form.alcohols(class="form-control", placeholder="Enter ABV")}}
+          </div>
       </div>
-      <p>Prices</p>
+        <label>Prices</label>
       <div class="form-group">
-          <label for="{{form.pricepint.id}}">Pint</label>
-          {{form.pricepint(class="form-control", placeholder="Enter Pint Price")}}
+          <label class="col-sm-2 control-label" for="{{form.pricepint.id}}">Pint</label>
+          <div class="col-sm-10">
+            {{form.pricepint(class="form-control", placeholder="Enter Pint Price")}}
+          </div>
+          <label class="col-sm-2 control-label" for="{{form.pricehalf.id}}">16oz</label>
+          <div class="col-sm-10">
+            {{form.pricehalf(class="form-control", placeholder="Enter Half Growler Price")}}
+          </div>
+          <label class="col-sm-2 control-label" for="{{form.pricegrowler.id}}">32oz</label>
+          <div class="col-sm-10">
+            {{form.pricegrowler(class="form-control", placeholder="Enter Growler Price")}}
+          </div>
       </div>
       <div class="form-group">
-          <label for="{{form.pricehalf.id}}">16oz</label>
-          {{form.pricehalf(class="form-control", placeholder="Enter Half Growler Price")}}
-      </div>
-      <div class="form-group">
-          <label for="{{form.pricegrowler.id}}">32oz</label>
-          {{form.pricegrowler(class="form-control", placeholder="Enter Growler Price")}}
-      </div>
-      <div class="form-group">
-          <label for="{{form.notes.id}}">Notes</label>
-          {{form.notes(class="form-control", placeholder="Enter Notes")}}
+          <label class="col-sm-2 control-label" for="{{form.notes.id}}">Notes</label>
+          <div class="col-sm-10">
+            {{form.notes(class="form-control", placeholder="Enter Notes")}}
+          </div>
       </div>
       <div class="checkbox">
         <label>
-          Active: {{form.active()}}
+          {{form.active()}} Active
         </label>
       </div>
       <button value="Entry" type="submit" class="btn btn-default">Submit</button>
