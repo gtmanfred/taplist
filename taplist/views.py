@@ -149,6 +149,10 @@ class Json(TaplistView):
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+        for beer in beers:
+            beer['pint'].replace('.0', '')
+            beer['half'].replace('.0', '')
+            beer['growler'].replace('.0', '')
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
