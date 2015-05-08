@@ -150,6 +150,8 @@ class Json(TaplistView):
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
         for beer in beers:
+            if 'pint' not in beer:
+                continue
             beer['pint'].replace('.0', '')
             beer['half'].replace('.0', '')
             beer['growler'].replace('.0', '')
