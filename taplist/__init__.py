@@ -1,10 +1,13 @@
 from flask import Flask
 from flask.ext.stormpath import StormpathManager
+from flask.ext.cors import CORS
+
 import os
 
 app = Flask(__name__)
 app.config.from_object('config.{0}'.format(os.getenv('APP_SETTINGS', 'Config')))
 StormpathManager(app)
+CORS(app)
 app.debug=True
 
 from taplist import views
