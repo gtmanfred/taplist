@@ -152,9 +152,9 @@ class Json(TaplistView):
         for beer in beers:
             if 'pint' not in beer:
                 continue
-            beer['pint'].replace('.0', '')
-            beer['half'].replace('.0', '')
-            beer['growler'].replace('.0', '')
+            beer['pint'] = beer['pint'].replace('.0', '')
+            beer['half'] = beer['half'].replace('.0', '')
+            beer['growler'] = beer['growler'].replace('.0', '')
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
