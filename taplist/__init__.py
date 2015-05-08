@@ -17,4 +17,5 @@ app.add_url_rule('/<location>/scroll', view_func=views.Scroll.as_view('scroll'),
 app.add_url_rule('/<location>/json', view_func=views.Json.as_view('get_json'), methods=['GET'])
 app.add_url_rule('/<location>/edit', view_func=views.Edit.as_view('editlist'), methods=['GET', 'POST'])
 app.add_url_rule('/<location>/', view_func=views.BarLists.as_view('bars'))
+app.add_url_rule('/locations', view_func=views.Locations.as_view('locations'), methods=['GET'])
 app.add_url_rule('/', view_func=views.Index.as_view('index'))

@@ -159,6 +159,11 @@ class Json(TaplistView):
         return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
 
 
+class Locations(TaplistView):
+    def get(self):
+        return jsonify({'locations': self.locations})
+
+
 class Edit(TaplistView):
     decorators=[
         login_required,
