@@ -160,7 +160,7 @@ class Json(TaplistView):
             beer['half'] = beer['half'].replace('.0', '')
             beer['growler'] = beer['growler'].replace('.0', '')
         beers.sort(key=operator.itemgetter('brewery', 'name'))
-        return jsonify({'beers': [b for b in beers if b['active'] == 'True']})
+        return jsonify({'beers': beers})
 
 
 class Locations(TaplistView):
