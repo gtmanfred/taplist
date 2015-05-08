@@ -148,7 +148,11 @@ class Json(TaplistView):
             return 'Unknown Location'
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
-        beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+        beers=[]
+        for key in r.keys('beer_{0}_*'.format(location)):
+            beer = convert(r.hgetall(key))
+            beer['beername'] = key
+            beers.append(beer)
         for beer in beers:
             if 'pint' not in beer:
                 continue
