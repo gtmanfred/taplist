@@ -163,6 +163,22 @@ class Json(TaplistView):
         return jsonify({'beers': beers})
 
 
+class GetBeer(TaplistView):
+    def get(self, location, beerid):
+        if location not in self.locations:
+            return 'Unknown Location'
+        print(beerid)
+        pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+        r = redis.Redis(connection_pool=pool)
+        beer = convert(r.hgetall(beerid))
+        beer['beername'] = beerid 
+        if 'pint' in beer:
+            beer['pint'] = beer['pint'].replace('.0', '')
+            beer['half'] = beer['half'].replace('.0', '')
+            beer['growler'] = beer['growler'].replace('.0', '')
+        return jsonify({'beer': beer})
+
+
 class Locations(TaplistView):
     def get(self):
         return jsonify({'locations': self.locations})

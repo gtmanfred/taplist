@@ -1,5 +1,13 @@
-var taplistApp = angular.module('taplist', []);
-taplistApp.controller('TaplistController', ['$scope', '$log', '$http', function($scope, $log, $http) {
+var taplist = angular.module('taplist', [])
+taplist.config(function($locationProvider) {
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  });
+});
+taplist.controller('TaplistController', ['$scope', '$log', '$http', '$location', function($scope, $log, $http, $location) {
+  $log.log($location.search()['name']);
+  $scope.beerdata = {};
   function get_locations(){
     $http.get('https://taplists.beer/locations').
       success(function(data, status, headers, config) {
@@ -20,6 +28,8 @@ taplistApp.controller('TaplistController', ['$scope', '$log', '$http', function(
   if ($scope.loc.indexOf('/scroll') > -1) {
       $scope.scroll = true;
       $scope.loc = $scope.loc.replace('/scroll', '');
+  } else {
+      $scope.scroll = false;
   };
 
   if ($scope.loc.indexOf('/edit') > -1) {
@@ -32,6 +42,8 @@ taplistApp.controller('TaplistController', ['$scope', '$log', '$http', function(
   if ($scope.loc.indexOf('/entry') > -1) {
       $scope.entry = true;
       $scope.loc = $scope.loc.replace('/entry', '');
+  } else {
+      $scope.entry = false;
   };
 
   if ($scope.loc !== '/') {
