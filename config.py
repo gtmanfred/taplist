@@ -4,8 +4,7 @@ import yaml
 class Config(object):
     CSRF_ENABLED = True
     DEVEL = False
-    SECRET_KEY = 'you-will-never-guess'
-    SECRET_KEY = 'someprivatestringhere'
+    SECRET_KEY = 'REPLACE'
     STORMPATH_API_KEY_FILE = os.path.expanduser('~/.apiKey.properties')
     STORMPATH_APPLICATION = 'taplists.beer'
     STORMPATH_ENABLE_USERNAME = True

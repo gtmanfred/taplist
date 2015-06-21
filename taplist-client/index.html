@@ -1,5 +1,6 @@
 <html ng-app="taplist">
   <head>
+    <base href="/">
     <title>TV Beer Listing ({{ location }}) </title>
     <meta charset="utf-8">
     <!-- Browser favicon -->
@@ -80,7 +81,7 @@
           </tr>
         </tbody>
       </table>
-      <button id="submit-edits" class="btn" type="submit">Submit!</button>
+      <button id="submit-edits" class="btn" type="submit" ng-if="edit">Submit!</button>
       <script ng-if="scroll">
         function scroll(speed) {
           $(beers).delay(5000).animate({scrollTop: $(beertable).height() - $(beers).height()}, speed, "linear", function(){
@@ -90,10 +91,6 @@
         speed = 100000;
         scroll(speed);
         setInterval(function(){scroll(speed)}, speed * 2 + 5000);
-      </script>
-      <script ng-if="edit">
-        $(beers).removeClass('bodycontainer');
-        $(beers).removeClass('scrollable');
       </script>
     </div>
     <div class="footer" ng-if="beers && edit == false">*TX Beers</div>

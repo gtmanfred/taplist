@@ -1,10 +1,4 @@
-var taplist = angular.module('taplist', [])
-taplist.config(function($locationProvider) {
-  $locationProvider.html5Mode({
-    enabled: true,
-    requireBase: false
-  });
-});
+var taplist = angular.module('taplist', []);
 taplist.controller('TaplistController', ['$scope', '$log', '$http', '$location', function($scope, $log, $http, $location) {
   $scope.beerdata = {
     beerid: "",
@@ -52,7 +46,7 @@ taplist.controller('TaplistController', ['$scope', '$log', '$http', '$location',
   if ($scope.loc.indexOf('/entry') > -1) {
       $scope.entry = true;
       $scope.loc = $scope.loc.replace('/entry', '');
-      var beerid = $location.search()['name'];
+      var beerid = $location.search().name;
       if (beerid) {
         var url = 'https://taplists.beer' + $scope.loc + '/' + beerid;
         $http.get(url).
