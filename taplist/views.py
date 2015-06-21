@@ -134,7 +134,7 @@ class Scroll(TaplistView):
         priceinfo = get_priceinfo(location, self.config)
         if 'items' in priceinfo:
             for beer in beers:
-                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items']]))
+                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items'] if p in beer]))
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
@@ -209,7 +209,7 @@ class Edit(TaplistView):
             beers.append(beer)
         if 'items' in priceinfo:
             for beer in beers:
-                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items']]))
+                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items'] if p in beer]))
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template(
             'edit.html',
@@ -262,7 +262,7 @@ class BarLists(TaplistView):
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
         if 'items' in priceinfo:
             for beer in beers:
-                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items']]))
+                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items'] if p in beer]))
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('index.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
