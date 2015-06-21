@@ -77,9 +77,10 @@ class Entry(TaplistView):
             form.beername.data = beer['name']
             form.brewery.data = beer['brewery']
             form.beertype.data = beer['type']
-            form.pricepint.data = beer['pint']
-            form.pricehalf.data = beer['half']
-            form.pricegrowler.data = beer['growler']
+            form.pricepint.data = beer.get('pint', '')
+            form.pricehalf.data = beer.get('half', '')
+            form.pricegrowler.data = beer.get('growler', '')
+            form.notes.data = beer.get('notes', '')
             form.alcohols.data = beer['content']
             form.active.data = beer['active'] == 'True'
         return render_template('entry.html', title='Entry', form=form, beername=beername, roles=self.groups, locations=self.locations)
