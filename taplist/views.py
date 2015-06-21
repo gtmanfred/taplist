@@ -17,7 +17,7 @@ import redis
 from redis.sentinel import Sentinel
 
 #taplist libs
-from taplist.utils import convert, get_colors
+from taplist.utils import convert, get_colors, get_priceinfo
 from taplist.form import BeerForm
 from taplist.auth import role_required
 from taplist import app
@@ -131,13 +131,17 @@ class Scroll(TaplistView):
         if location not in self.locations:
             return 'Unknown Location'
         colors = get_colors(location, self.config)
+        priceinfo = get_priceinfo(location, self.config)
+        if 'items' in priceinfo:
+            for beer in beers:
+                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items']]))
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('scroll.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
-                               colors=colors)
+                               priceinfo=priceinfo, colors=colors)
 
 
 class Json(TaplistView):
@@ -191,6 +195,7 @@ class Edit(TaplistView):
         if location not in self.locations:
             return 'Unknown Location'
         colors = get_colors(location, self.config)
+        priceinfo = get_priceinfo(location, self.config)
         if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
             r = redis.Redis(connection_pool=pool)
@@ -202,8 +207,20 @@ class Edit(TaplistView):
             beer = convert(r.hgetall(key))
             beer['beername'] = key
             beers.append(beer)
+        if 'items' in priceinfo:
+            for beer in beers:
+                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items']]))
         beers.sort(key=operator.itemgetter('brewery', 'name'))
-        return render_template('edit.html', title='Beer List', beers=beers, location=location, colors=colors, roles=self.groups, locations=self.locations)
+        return render_template(
+            'edit.html',
+            title='Beer List',
+            beers=beers,
+            location=location,
+            colors=colors,
+            roles=self.groups,
+            locations=self.locations,
+            priceinfo=priceinfo
+        )
 
     def post(self, location):
         if location not in self.locations:
@@ -239,13 +256,17 @@ class BarLists(TaplistView):
         if location not in self.locations:
             return 'Unknown Location'
         colors = get_colors(location, self.config)
+        priceinfo = get_priceinfo(location, self.config)
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beers = convert([r.hgetall(key) for key in r.keys('beer_{0}_*'.format(location))])
+        if 'items' in priceinfo:
+            for beer in beers:
+                beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items']]))
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('index.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
-                               colors=colors, locations=self.locations, roles=self.groups)
+                               colors=colors, locations=self.locations, roles=self.groups, priceinfo=priceinfo)
 
 
 @app.route('/logout')

@@ -15,3 +15,9 @@ def get_colors(location, config):
         if location in its['locations']:
             return its.get('colors', {})
     return {}
+
+def get_priceinfo(location, config):
+    for owner, its in config.items():
+        if location in its['locations']:
+            return its.get('prices', {})
+    return {}

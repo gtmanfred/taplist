@@ -7,7 +7,7 @@
                         <th>Brewery</th>
                         <th>Name</th>
                         <th>Style</th>
-                        <th>64<sup>oz</sup>/32<sup>oz</sup>/16<sup>oz</sup></th>
+                        <th>{{priceinfo['name']}}</th>
                         <th>ABV<sup>%</sup></th>
                         <th>Active</th>
                         <th>Delete</th>
@@ -22,7 +22,7 @@
                         {%- if beer['notes'] != "" %}
                         <td class="th4">{{ beer['notes'] }}</td>
                         {%- else %}
-                        <td class="th4">{{ "$ %s / %s / %s"|format(beer['growler'], beer['half'], beer['pint'])|replace('.0', '') }}</td>
+                        <td class="th4">{{ beer['price'] }}</td>
                         {% endif %}
                         <td>{{ beer['content'] }}</td>
                         <td><input id="test" type="checkbox" name="checks" value="{{ beer['beername'] }}"
