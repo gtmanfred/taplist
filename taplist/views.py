@@ -66,7 +66,6 @@ class Entry(TaplistView):
         return beer
 
     def get(self, location):
-        #print([g.group.name for g in user.group_memberships])
         if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
@@ -105,7 +104,6 @@ class Entry(TaplistView):
         if location not in self.locations:
             return 'Unknown Location'
         form = BeerForm()
-        print(request.form)
         beer = self._beer(form, location)
         if app.config['DEVEL']:
             pool = redis.ConnectionPool(host='localhost', port=6379)
@@ -167,7 +165,6 @@ class GetBeer(TaplistView):
     def get(self, location, beerid):
         if location not in self.locations:
             return 'Unknown Location'
-        print(beerid)
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
         beer = convert(r.hgetall(beerid))

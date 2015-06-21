@@ -8,7 +8,8 @@ app = Flask(__name__)
 app.config.from_object('config.{0}'.format(os.getenv('APP_SETTINGS', 'Config')))
 StormpathManager(app)
 CORS(app)
-app.debug=True
+if app.config['DEVEL']:
+    app.debug=True
 
 from taplist import views
 
