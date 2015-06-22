@@ -142,7 +142,7 @@ class Scroll(TaplistView):
         beers.sort(key=operator.itemgetter('brewery', 'name'))
         return render_template('scroll.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
-                               priceinfo=priceinfo, colors=colors)
+                               groups=self.groups, priceinfo=priceinfo, colors=colors, locations=self.locations)
 
 
 class Json(TaplistView):
