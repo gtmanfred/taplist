@@ -1,38 +1,40 @@
 {% extends "base.html" %}
 {% block content -%}
         <form method='POST'>
-            <table class="table table-condensed table-striped">
-                <thead>
-                    <tr>
-                        <th>Brewery</th>
-                        <th>Name</th>
-                        <th>Style</th>
-                        <th>{{priceinfo['name']}}</th>
-                        <th>ABV<sup>%</sup></th>
-                        <th>Active</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                <tbody style='font-weight:bold;'>
-            {% for beer in beers -%}
-                    <tr>
-                        <td>{{ beer['brewery'] }}</td>
-                        <td><a href="{{ '/%s/entry?name=%s'|format(location, beer['beername']) }}">{{ beer['name']}}</a></td>
-                        <td>{{ beer['type']}}</td>
-                        {%- if beer['notes'] != "" %}
-                        <td class="th4">{{ beer['notes'] }}</td>
-                        {%- else %}
-                        <td class="th4">{{ beer['price'] }}</td>
-                        {% endif %}
-                        <td>{{ beer['content'] }}</td>
-                        <td><input id="test" type="checkbox" name="checks" value="{{ beer['beername'] }}"
-                            {%- if beer['active'] == 'True' %} checked
-                            {%- endif -%}></td>
-                        <td><input type="checkbox" name="delete" value="{{ beer['beername'] }}"</td>
-                    </tr>
-            {% endfor -%}
-                </tbody>
-            </table>
-            <input type="submit" value="Submit">
+            <div class="hidescrollable bodycontainer" id="beers">
+                <table class="table table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Brewery</th>
+                            <th>Name</th>
+                            <th>Style</th>
+                            <th>{{priceinfo['name']}}</th>
+                            <th>ABV<sup>%</sup></th>
+                            <th>Active</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody style='font-weight:bold;'>
+                {% for beer in beers -%}
+                        <tr>
+                            <td>{{ beer['brewery'] }}</td>
+                            <td><a href="{{ '/%s/entry?name=%s'|format(location, beer['beername']) }}">{{ beer['name']}}</a></td>
+                            <td>{{ beer['type']}}</td>
+                            {%- if beer['notes'] != "" %}
+                            <td class="th4">{{ beer['notes'] }}</td>
+                            {%- else %}
+                            <td class="th4">{{ beer['price'] }}</td>
+                            {% endif %}
+                            <td>{{ beer['content'] }}</td>
+                            <td><input id="test" type="checkbox" name="checks" value="{{ beer['beername'] }}"
+                                {%- if beer['active'] == 'True' %} checked
+                                {%- endif -%}></td>
+                            <td><input type="checkbox" name="delete" value="{{ beer['beername'] }}"</td>
+                        </tr>
+                {% endfor -%}
+                    </tbody>
+                </table>
+                <input type="submit" value="Submit"><br><br>
+            </div>
         </form>
 {% endblock -%}
