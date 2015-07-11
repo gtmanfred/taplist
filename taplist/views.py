@@ -139,7 +139,7 @@ class Scroll(TaplistView):
         if 'items' in priceinfo:
             for beer in beers:
                 beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items'] if p in beer]))
-        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
         return render_template('scroll.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
                                groups=self.groups, priceinfo=priceinfo, colors=colors, locations=self.locations)
@@ -162,7 +162,7 @@ class Json(TaplistView):
             beer['pint'] = beer['pint'].replace('.0', '')
             beer['half'] = beer['half'].replace('.0', '')
             beer['growler'] = beer['growler'].replace('.0', '')
-        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
         return jsonify({'beers': beers})
 
 
@@ -211,7 +211,7 @@ class Edit(TaplistView):
         if 'items' in priceinfo:
             for beer in beers:
                 beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items'] if p in beer]))
-        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
         return render_template(
             'edit.html',
             title='Beer List',
@@ -247,7 +247,7 @@ class Edit(TaplistView):
             beer['beername'] = key
             beers.append(beer)
 
-        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
 
         return redirect(location)
 
@@ -264,7 +264,7 @@ class BarLists(TaplistView):
         if 'items' in priceinfo:
             for beer in beers:
                 beer['price'] = '$ {0}'.format(' /'.join([beer[p].replace('.0', '') for p in priceinfo['items'] if p in beer]))
-        beers.sort(key=operator.itemgetter('brewery', 'name'))
+        beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
         return render_template('index.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
                                colors=colors, locations=self.locations, roles=self.groups, priceinfo=priceinfo)
