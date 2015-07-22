@@ -3,6 +3,11 @@
         {%- include "tablehead.html" %}
         {%- include 'table.html' %}
         <script type="text/javascript">
+        $(document).ready(function() {
+            setInterval("location.reload(true)", 300000);
+        });
+        </script>
+        <script type="text/javascript">
             function scroll(speed) {
                 $(beers).delay(5000).animate({scrollTop: $(beertable).height() - $(beers).height()}, speed, "linear", function(){
                         $(this).delay(5000).animate({scrollTop: 0}, speed, "linear");
