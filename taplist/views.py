@@ -142,7 +142,8 @@ class Scroll(TaplistView):
         beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
         return render_template('scroll.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
-                               groups=self.groups, priceinfo=priceinfo, colors=colors, locations=self.locations)
+                               groups=self.groups, priceinfo=priceinfo, colors=colors, locations=self.locations,
+                               scroll=True)
 
 
 class Json(TaplistView):
@@ -220,7 +221,8 @@ class Edit(TaplistView):
             colors=colors,
             roles=self.groups,
             locations=self.locations,
-            priceinfo=priceinfo
+            priceinfo=priceinfo,
+            scroll=False
         )
 
     def post(self, location):
@@ -267,7 +269,8 @@ class BarLists(TaplistView):
         beers.sort(key=operator.itemgetter('brewery', 'name', 'type'))
         return render_template('index.html', title='Beer List',
                                beers=[beer for beer in beers if beer['active'] == 'True'], location=location,
-                               colors=colors, locations=self.locations, roles=self.groups, priceinfo=priceinfo)
+                               colors=colors, locations=self.locations, roles=self.groups, priceinfo=priceinfo,
+                               scroll=False)
 
 
 @app.route('/logout')
